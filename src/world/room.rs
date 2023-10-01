@@ -1,4 +1,4 @@
-use strum_macros::EnumIter;
+use strum_macros::{EnumIter, Display};
 
 
 #[derive(EnumIter, Eq, PartialEq, Hash)]
@@ -15,6 +15,7 @@ pub enum RoomIdentifier {
     Cockpit,
 }
 
+#[derive(Display)]
 pub enum Direction {
     North,
     East,

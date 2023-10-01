@@ -31,4 +31,8 @@ impl GameState {
             world,
         }
     }
+
+    pub fn current_room_description(&self) -> &str {
+        self.world.get_room_description(self.current_room)
+    }
 }
