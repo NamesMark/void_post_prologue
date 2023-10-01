@@ -1,12 +1,16 @@
 mod engine;
 mod parser;
+mod world;
+
+//use world::World;
+use world::room::RoomIdentifier;
 
 use engine::state::GameState;
 use engine::actions;
 use parser::command::Command;
 
 fn main() {
-    let mut game_state = GameState::new();
+    let game_state = GameState::new(RoomIdentifier::Storage);
     
     loop {
         // Get input from the player

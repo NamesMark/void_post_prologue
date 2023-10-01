@@ -1,3 +1,5 @@
+use crate::world::room::Direction;
+
 pub enum Command {
     Look,
     Open,
@@ -7,15 +9,6 @@ pub enum Command {
 
 
     // TODO: always can add more commands lol
-}
-
-pub enum Direction {
-    North,
-    East,
-    South,
-    West,
-    Up,
-    Down,
 }
 
 pub fn parse(input: &str) -> Option<Command> {
