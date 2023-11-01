@@ -4,6 +4,7 @@ mod utils;
 mod engine;
 mod parser;
 mod world;
+mod entity;
 
 //use world::World;
 use world::room::RoomIdentifier;
@@ -12,9 +13,13 @@ use world::room::Direction;
 use engine::state::GameState;
 use engine::actions;
 use parser::command::Command;
+use rand::prelude::SliceRandom;
 
 fn main() {
     let mut game_state = GameState::new(RoomIdentifier::Storage);
+
+    println!("{}", game_state.current_room_first_thoughts());
+    println!("{}", game_state.current_room_description());
     
     loop {
         // Get input from the player
@@ -32,7 +37,7 @@ fn process_input(game_state: &mut GameState, command: Option<Command>) {
             println!("{}", actions::look(&game_state));
         },
 
-        Some(Command::Go(direction)) => handle_movement(&mut game_state, direction),
+        Some(Command::Go(direction)) => handle_movement(game_state, direction),
 
         Some(Command::Look(obj)) => println!("{}", actions::look_at(game_state, &obj.unwrap_or(String::from("I'm not sure where to look at")))),
 
@@ -55,7 +60,7 @@ fn handle_movement(game_state: &mut GameState, direction: Direction) {
         Err(error) => {
             print_any!(format!("I can't go to {}: {}", direction, error),
                        format!("There's nowhere to go at {}, I think?", direction),
-                       format!("I could try, I remember it worked at a certain spaceport platform to get on a spacecruiser to the nanoscience school for gifted kids... or was it in a holoseries?..")
+                       format!("I could try, I remember walking through solid walls worked at a certain spaceport platform to get on a spacecruiser to the nanoscience school for gifted kids... or was it in a holoseries?..")
         );
         },
     }

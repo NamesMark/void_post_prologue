@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use crate::world::room::RoomIdentifier;
 use crate::world::data::World;
 
+use strum::IntoEnumIterator;
+
 pub struct GameState {
     pub current_room: RoomIdentifier,
     pub room_states: HashMap<RoomIdentifier, RoomState>,
@@ -32,7 +34,17 @@ impl GameState {
         }
     }
 
+    pub fn was_current_room_visited(&self) -> bool {
+        self.world.was_visited(&self.current_room)
+    }
     pub fn current_room_description(&self) -> &str {
-        self.world.get_room_description(self.current_room)
+        self.world.get_room_short_description(&self.current_room)
+    }
+    pub fn current_room_first_thoughts(&self) -> &str {
+        self.world.get_room_first_thoughts(&self.current_room)
+    }
+
+    pub fn current_room_entities(&self) -> &str {
+        self.world.get_room_short_description(&self.current_room)
     }
 }

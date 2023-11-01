@@ -37,7 +37,8 @@ pub enum Command {
 }
 
 pub fn parse(input: &str) -> Option<Command> {
-    let parts: Vec<&str> = input.trim().to_lowercase().split_whitespace().collect();
+    let input_lowercase = input.trim().to_lowercase();
+    let parts: Vec<&str> = input_lowercase.split_whitespace().collect();
     match parts.as_slice() {
         ["look", obj] | ["examine", obj] | ["x", obj] => Some(Command::Look(Some(obj.to_string()))),
         ["look"] | ["examine"] | ["x"] => Some(Command::Look(None)),
@@ -63,12 +64,12 @@ pub fn parse(input: &str) -> Option<Command> {
         ["save"] => Some(Command::Save),
         ["load"] => Some(Command::Load),
 
-        ["north"] | ["n"] => Some(Command::Go(Direction::North)),
-        ["east"] | ["e"] => Some(Command::Go(Direction::East)),
-        ["south"] | ["s"] => Some(Command::Go(Direction::South)),
-        ["west"] | ["w"] => Some(Command::Go(Direction::West)),
-        ["up"] | ["u"] => Some(Command::Go(Direction::Up)),
-        ["down"] | ["d"] => Some(Command::Go(Direction::Down)),
+        ["north"] | ["n"] | ["go", "north"] | ["go", "n"] => Some(Command::Go(Direction::North)),
+        ["east"] | ["e"] | ["go", "east"] | ["go", "e"] => Some(Command::Go(Direction::East)),
+        ["south"] | ["s"] | ["go", "south"] | ["go", "s"] => Some(Command::Go(Direction::South)),
+        ["west"] | ["w"] | ["go", "west"] | ["go", "w"] => Some(Command::Go(Direction::West)),
+        ["up"] | ["u"] | ["go", "up"] | ["go", "u"] => Some(Command::Go(Direction::Up)),
+        ["down"] | ["d"] | ["go", "down"] | ["go", "d"] => Some(Command::Go(Direction::Down)),
         _ => None,
     }
 }
