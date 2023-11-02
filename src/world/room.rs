@@ -1,5 +1,5 @@
 use strum_macros::{EnumIter, Display};
-use crate::entity::furniture::Furniture;
+use crate::entity::{furniture::Furniture, EntityId};
 
 #[derive(EnumIter, Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum RoomIdentifier {
@@ -32,7 +32,8 @@ pub struct RoomAttributes {
     pub full_description: String,
     pub first_thoughts: String,
     //pub potential_items: Vec<ItemBlueprint>,
-    pub furniture: Vec<Furniture>,
+    //pub furniture: Vec<Furniture>,
+    pub entities: Vec<EntityId>,
     pub connected_rooms: Vec<(Direction, RoomIdentifier)>,
 }
 

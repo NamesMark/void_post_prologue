@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use crate::entity::{Entity, EntityId};
 use crate::world::room::RoomIdentifier;
 use crate::world::data::World;
 
@@ -44,7 +45,7 @@ impl GameState {
         self.world.get_room_first_thoughts(&self.current_room)
     }
 
-    pub fn current_room_entities(&self) -> &str {
-        self.world.get_room_short_description(&self.current_room)
+    pub fn current_room_entities(&self) -> &Vec<EntityId> {
+        self.world.get_room_entities(&self.current_room)
     }
 }
