@@ -1,8 +1,12 @@
 use std::collections::HashMap;
+use std::cmp::max;
+use rand::prelude::SliceRandom;
 
 use crate::engine::state::GameState;
-use crate::world::room::Direction;
+use crate::world::room::{Direction, Access};
 use crate::entity::{Entity, EntityId};
+use crate::entity::item::ItemId;
+
 
 pub fn look(game_state: &GameState) -> String {
     // Fetch the room blueprint with RoomIdentifier
@@ -37,10 +41,16 @@ fn get_article(obj_name: &str) -> &str {
 pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Result<String, String> {
     match game_state.world.get_adjacent_room(&game_state.current_room, direction) {
         Some(new_room) => {
-            if game_state.get_player_access() < game_state.world.get_room_access(&new_room) {
+            if get_player_access(game_state) < *game_state.world.get_room_access(&new_room) {
                 return Err(format!("The door beeps with an unsatisfied tone."));
             }
             game_state.current_room = new_room;
+            print_any!(
+                "The door beeps with quiet acknowledgement and slides aside.",
+                "*Shhhhht* - the door slides open.",
+                "The door opens with no apparent effort from your side.",
+                "The door opened so fast as if it predicted your intention."
+            );
             if !game_state.was_current_room_visited() {
                 game_state.world.set_visited(&game_state.current_room);
                 Ok(format!("{}\n{}", game_state.current_room_first_thoughts(), game_state.current_room_description()))
@@ -50,6 +60,21 @@ pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Re
         },
         None => Err(format!("Can't go in the direction of {}.", direction))
     }
+}
+
+pub fn get_player_access(game_state: &mut GameState) -> Access {
+    let mut highest_access = Access::None;
+
+    for item_id in &game_state.inventory {
+        highest_access = match item_id {
+            ItemId::CaptainCard => highest_access.max(Access::A),
+            ItemId::BosunCard => highest_access.max(Access::B),
+            ItemId::AssistantCard => highest_access.max(Access::C),
+            _ => highest_access,
+        };
+    }
+
+    return highest_access
 }
 
 pub fn open(game_state: &GameState, obj: &str) -> String {

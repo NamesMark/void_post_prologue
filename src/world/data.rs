@@ -86,24 +86,28 @@ impl World {
             FurnId::Illuminator => Box::new(PassiveEntity::new(
                 EntityId::Furniture(FurnId::Illuminator),
                 "Illuminator".to_string(), 
+                vec!["window".to_string()],
                 r#"Wow, the view is beautiful. You can see a dimply lit large station floating not so far away - the side turned towards you has letters 'Vo.. 9', the rest of the letters are undiscernable. Now it's clear that you are drifting in space on board of another vessel. Something must've happened."#.to_string()
             )),
 
             FurnId::StorageShelf => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::StorageShelf),
-                "Shelves".to_string(), 
+                "Shelves".to_string(),
+                vec!["shelve".to_string()],
                 "Regular storage shelves that you'd find for your ship in SpaceMart™ - everything for your galactical travel needs!".to_string(),
                 vec![], // TODO: add something to the shelf
             )),
             FurnId::MessTable => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::MessTable),
                 "Tables".to_string(),
+                vec!["table".to_string()],
                 "There's nothing on the tables. The tabletops have this withered look of such heavily used and cleaned surfaces that they can never get fully clean anymore.".to_string(),
                 vec![],
             )),
             FurnId::Counter => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::Counter),
                 "Counter".to_string(),
+                vec![],
                 "The counter is cluttered with various kitchen gadgets and utensils. A half-eaten plate of biscuits sits abandoned, as if the eater left in a hurry. A small, handwritten note peeks out from under the plate.".to_string(),
                 vec![
                     EntityId::Item(ItemId::CounterNote),
@@ -117,24 +121,38 @@ impl World {
             FurnId::CoffeeMachine => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::CoffeeMachine),
                 "Coffee Machine".to_string(),
+                vec!["coffemaker".to_string(), "machine".to_string()],
                 "It's quite an expensive coffee machine. Considering that everything else in this room is cheap, it probably means that the captain is a big fan of coffee".to_string(),
                 vec![],
             )),
             FurnId::FoodPrinter => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::FoodPrinter),
                 "Food Printer".to_string(),
+                vec!["printer".to_string()],
                 "All the food that this machine prints tastes pretty much the same. Makes sense, because it's all made of the same surrogate.".to_string(),
                 vec![EntityId::Item(ItemId::FoodSurrogateBottle)],
             )),
             FurnId::Sink => Box::new(Sink::new(
                 EntityId::Furniture(FurnId::Sink),
                 "Sink".to_string(),
+                vec!["kitchen sink".to_string(), "basin".to_string()],
                 "The water from the tap is supposed to be potable... mostly.".to_string(),
                 vec![EntityId::Item(ItemId::Fork)],
             )),
+            
 
-            _ => unimplemented!(),
+
+
             // other cases...
+
+            FurnId::Dust => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::Dust),
+                "Dust".to_string(),
+                vec![],
+                "Heavy dust in the corners of this room.".to_string(),
+                vec![],
+            )),
+            _ => unimplemented!(),
         }
     }
     
@@ -143,6 +161,7 @@ impl World {
             ItemId::Bucket => Box::new(Container::new(
                 EntityId::Item(ItemId::Bucket),
                 "Bucket".to_string(),
+                vec!["blue bucket".to_string()],
                 "A regular blue bucket with big letters SM on it.".to_string(),
                 vec![],
                 Size::Medium,
@@ -150,32 +169,38 @@ impl World {
             ItemId::CounterNote => Box::new(TextItem::new(
                 EntityId::Item(ItemId::CounterNote),
                 "Note".to_string(),
+                vec![],
                 "A small note, with some scribbles on it".to_string(),
                 "Captain! We left some for you, hope you find them when you are less busy! -J".to_string()
             )),
             ItemId::Biscuits => Box::new(Food::new(
                 EntityId::Item(ItemId::Biscuits),
                 "Biscuits".to_string(),
+                vec!["cupcakes".to_string(), "cakes".to_string()],
                 "A few small chocolate biscuits. They feel a bit dry already, but still smell good and appetizing.".to_string()
             )),
             ItemId::SpaceRation => Box::new(Food::new(
                 EntityId::Item(ItemId::SpaceRation),
                 "Space ration".to_string(),
+                vec!["ration".to_string()],
                 "The package looks as it's decades old. It's probably here since this vessel has been commissioned.".to_string()
             )),
             ItemId::WaterBottle => Box::new(Drink::new(
                 EntityId::Item(ItemId::WaterBottle),
                 "Bottle of water".to_string(),
+                vec!["bottle".to_string(), "water".to_string()],
                 "It's full of de-mineralized and almost de-nucleotized water, \"mined from the finest ice asteroids \"".to_string()
             )),
             ItemId::FoodSurrogateBottle => Box::new(Food::new(
                 EntityId::Item(ItemId::FoodSurrogateBottle),
-                "Biscuits".to_string(),
+                "Food surrogate bottle".to_string(),
+                vec!["food surrogate".to_string(), "surrogate".to_string(), "bottle".to_string()],
                 "A large jug of greenish liquid. According to the label, contains all the vitamins, macro-, micro- and nano-elements a humanoid might need. Hmm.".to_string()
             )),
             ItemId::Plate => Box::new(Container::new(
                 EntityId::Item(ItemId::Plate),
                 "Plate".to_string(),
+                vec!["dish".to_string()],
                 "Just a regular plate. Did you expect something else?".to_string(),
                 vec![],
                 Size::Small,
@@ -183,12 +208,68 @@ impl World {
             ItemId::Fork => Box::new(Item::new(
                 EntityId::Item(ItemId::Fork),
                 "Fork".to_string(),
+                vec![],
                 "It has three prongs. Technically, it probably should be called a small trident?".to_string(),
                 Size::Small,
             )),
+            ItemId::EmptyBottle => Box::new(Item::new(
+                EntityId::Item(ItemId::EmptyBottle),
+                "Empty Bottle".to_string(),
+                vec!["bottle".to_string()],
+                "Just a regular transparent bottle that used to contain something.".to_string(),
+                Size::Small,
+            )),
+            ItemId::SecretBottle => Box::new(Item::new(
+                EntityId::Item(ItemId::SecretBottle),
+                "Secret Bottle".to_string(),
+                vec!["bottle".to_string()],
+                "".to_string(),
+                Size::Small,
+            )),
+            ItemId::LuckyCoin => Box::new(Item::new(
+                EntityId::Item(ItemId::LuckyCoin),
+                "Lucky Coin".to_string(),
+                vec!["coin".to_string()],
+                "".to_string(),
+                Size::Small,
+            )),
+            ItemId::AssistantCard => Box::new(Item::new(
+                EntityId::Item(ItemId::AssistantCard),
+                "Assistant Card".to_string(),
+                vec!["card".to_string()],
+                "".to_string(),
+                Size::Small,
+            )),
+            ItemId::BosunCard => Box::new(Item::new(
+                EntityId::Item(ItemId::BosunCard),
+                "Bosun Card".to_string(),
+                vec!["card".to_string()],
+                "".to_string(),
+                Size::Small,
+            )),
+            ItemId::CaptainCard => Box::new(Item::new(
+                EntityId::Item(ItemId::CaptainCard),
+                "Captain Card".to_string(),
+                vec!["card".to_string()],
+                "".to_string(),
+                Size::Small,
+            )),
 
-            _ => unimplemented!(),
+
+
+
+
             // other cases...
+
+
+            ItemId::Dust => Box::new(Item::new(
+                EntityId::Item(ItemId::Dust),
+                "A layer of dust".to_string(),
+                vec![],
+                "Nothing much to say here".to_string(),
+                Size::Small,
+            )),
+            //_ => unimplemented!(),
         }
     }
 

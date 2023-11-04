@@ -12,6 +12,7 @@ use world::room::Direction;
 
 use engine::state::GameState;
 use engine::actions;
+use engine::tui;
 use parser::command::Command;
 use rand::prelude::SliceRandom;
 
@@ -33,16 +34,52 @@ fn main() {
 
 fn process_input(game_state: &mut GameState, command: Option<Command>) {
     match command {
+
+        // Look(Option<String>),  // Look at something specific
+        // Examine(Option<String>),  // Examine something in detail
         Some(Command::Look(None)) => {
             println!("{}", actions::look(&game_state));
         },
 
-        Some(Command::Go(direction)) => handle_movement(game_state, direction),
-
         Some(Command::Look(obj)) => println!("{}", actions::look_at(game_state, &obj.unwrap_or(String::from("I'm not sure where to look at")))),
-
+        
+        
+        // Open(String),         // Open something
+        // Close(String),        // Close something
         Some(Command::Open(obj)) => println!("{}", actions::open(game_state, &obj)),
         Some(Command::Close(obj)) => println!("{}", actions::close(game_state, &obj)),
+
+        
+        // Go(Direction),        // Move in a direction
+        Some(Command::Go(direction)) => handle_movement(game_state, direction),
+        // Enter(String),        // Enter something
+        
+        // // Interaction
+        // Take(String),         // Take an object
+        Some(Command::Take(obj)) => println!("{}", actions::pick_up(game_state, &obj)),
+        // Drop(String),         // Drop an object
+        // Use(String),          // Use an object
+        // Combine(String, String), // Combine two items
+        // Push(String),         // Push something
+        // Pull(String),         // Pull something
+        // Turn(String),         // Turn something (like a knob or switch)
+        // Read(String),         // Read something (like a note)
+        
+        // // Communication
+        // // TalkTo(String),       // Talk to a character
+        // // Give(String, String), // Give an item to someone
+        
+        // // Inventory & status
+        // Inventory,            // Check your items
+        Some(Command::Inventory) => println!("{}", tui::inventory(game_state)),
+        // Help
+        Some(Command::Help) => println!("{}", tui::help()),
+        // Status,               // Check player's status or health
+        
+        // // Misc
+        // Help,                 // Show available commands
+        // Save,                 // Save the game
+        // Load,                 // Load the game
                     
         _ => print_any!("Erm, say that again?", 
                         "I am not sure I follow", 

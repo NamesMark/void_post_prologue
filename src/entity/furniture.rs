@@ -12,7 +12,7 @@ pub enum FurnId {
     FoodPrinter,
     Sink,
     #[default]
-    Nothing
+    Dust
 }
 
 impl_entity!(Furniture, Sink);
@@ -20,26 +20,28 @@ impl_entity!(Furniture, Sink);
 pub struct Furniture {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     contains: Vec<EntityId>, 
 }
 
 impl Furniture {
-    pub fn new(id: EntityId, name: String, description: String, contains: Vec<EntityId>) -> Self {
-        Furniture { id, name, description, contains }
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
+        Furniture { id, name, aliases, description, contains }
     }
 }
 
 pub struct Sink {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     contains: Vec<EntityId>, 
     tap_is_on: bool,
 }
 
 impl Sink {
-    pub fn new(id: EntityId, name: String, description: String, contains: Vec<EntityId>) -> Self {
-        Sink { id, name, description, contains, tap_is_on: false }
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
+        Sink { id, name, aliases, description, contains, tap_is_on: false }
     }
 }

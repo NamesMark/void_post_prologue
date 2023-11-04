@@ -53,8 +53,5 @@ impl GameState {
     pub fn current_room_entities(&self) -> Option<&Vec<EntityId>> {
         self.world.get_room_entities(&self.current_room)
     }
-
-    pub fn get_player_access(&self) -> &Access {
-        todo!("Check the highest access level card in the inventory")
-    }
+    
 }

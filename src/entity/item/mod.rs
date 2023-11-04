@@ -23,7 +23,7 @@ pub enum ItemId {
     CaptainCard,
     
     #[default]
-    Nothing
+    Dust
 }
 
 pub enum Size {
@@ -45,6 +45,7 @@ impl_entity!(Item, Container, Food, Drink, TextItem, SecretBottle);
 pub struct Item {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     size: Size,
     // weight: f32,
@@ -53,22 +54,23 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn new(id: EntityId, name: String, description: String, size: Size) -> Self {
-        Item { id, name, description, size }
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, size: Size) -> Self {
+        Item { id, name, aliases, description, size }
     }
 }
 
 pub struct Container {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     contains: Vec<EntityId>,
     size: Size,
 }
 
 impl Container {
-    pub fn new(id: EntityId, name: String, description: String, contains: Vec<EntityId>, size: Size) -> Self {
-        Container { id, name, description, contains, size }
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>, size: Size) -> Self {
+        Container { id, name, aliases, description, contains, size }
     }
 }
 
@@ -84,6 +86,7 @@ impl Containable for Container {
 pub struct SecretBottle {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     contains: Option<EntityId>,
     liquid: Liquid,
@@ -144,13 +147,14 @@ impl LiquidContainable for SecretBottle {
 pub struct TextItem {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     contents: String,
 }
 
 impl TextItem {
-    pub fn new(id: EntityId, name: String, description: String, contents: String) -> Self {
-        TextItem { id, name, description, contents}
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contents: String) -> Self {
+        TextItem { id, name, aliases, description, contents}
     }
 }
 
@@ -166,12 +170,13 @@ impl Readable for TextItem {
 pub struct Food {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
 }
 
 impl Food {
-    pub fn new(id: EntityId, name: String, description: String) -> Self {
-        Food { id, name, description}
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String) -> Self {
+        Food { id, name, aliases, description}
     }
 }
 
@@ -187,12 +192,13 @@ impl Edible for Food {
 pub struct Drink {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
 }
 
 impl Drink {
-    pub fn new(id: EntityId, name: String, description: String) -> Self {
-        Drink { id, name, description}
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String) -> Self {
+        Drink { id, name, aliases, description}
     }
 }
 
@@ -207,14 +213,15 @@ impl Drinkable for Drink {
 pub struct LiquidContainer {
     id: EntityId,
     name: String,
+    aliases: Vec<String>,
     description: String,
     liquid: Liquid,
     //amount: u8,
 }
 
 impl LiquidContainer {
-    pub fn new(id: EntityId, name: String, description: String, liquid: Liquid) -> Self {
-        LiquidContainer { id, name, description, liquid}
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, liquid: Liquid) -> Self {
+        LiquidContainer { id, name, aliases, description, liquid}
     }
 }
 
