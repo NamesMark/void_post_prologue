@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use crate::entity::{Entity, EntityId};
-use crate::world::room::RoomIdentifier;
+use crate::entity::item::{ItemId};
+use crate::world::room::{RoomIdentifier, Access};
 use crate::world::data::World;
 
 use strum::IntoEnumIterator;
@@ -10,6 +11,7 @@ pub struct GameState {
     pub current_room: RoomIdentifier,
     pub room_states: HashMap<RoomIdentifier, RoomState>,
     pub world: World,                  
+    pub inventory: Vec<ItemId>
 }
 
 pub struct RoomState {
@@ -28,10 +30,13 @@ impl GameState {
             room_states.insert(room_id, RoomState { is_explored: false });
         }
 
+        let inventory = vec![ItemId::AssistantCard];
+
         GameState {
             current_room: starting_room,
             room_states,
             world,
+            inventory
         }
     }
 
@@ -45,7 +50,11 @@ impl GameState {
         self.world.get_room_first_thoughts(&self.current_room)
     }
 
-    pub fn current_room_entities(&self) -> &Vec<EntityId> {
+    pub fn current_room_entities(&self) -> Option<&Vec<EntityId>> {
         self.world.get_room_entities(&self.current_room)
+    }
+
+    pub fn get_player_access(&self) -> &Access {
+        todo!("Check the highest access level card in the inventory")
     }
 }

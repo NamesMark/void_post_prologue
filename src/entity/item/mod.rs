@@ -1,17 +1,27 @@
 use crate::impl_entity;
-use strum_macros::EnumIter;
+use strum_macros::{EnumIter, Display};
 use super::EntityId;
 
-#[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash)]
+#[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ItemId {
     Bucket,
     SpaceRation,
     WaterBottle,
+    EmptyBottle,
+    SecretBottle,
     CounterNote,
     Biscuits,
     Plate,
     FoodSurrogateBottle,
+    Fork,
+    LuckyCoin,
 
+
+
+    AssistantCard,
+    BosunCard,
+    CaptainCard,
+    
     #[default]
     Nothing
 }
@@ -22,19 +32,34 @@ pub enum Size {
     Large,
 }
 
-impl_entity!(Item, Container, Food, Drink, TextItem);
+#[derive(Display, PartialEq, Eq)]
+pub enum Liquid {
+    Water,
+    Coffee,
+    Fuel,
+    Air,
+}
+
+impl_entity!(Item, Container, Food, Drink, TextItem, SecretBottle);
 
 pub struct Item {
-    id: u32,
+    id: EntityId,
     name: String,
     description: String,
     size: Size,
-    weight: f32,
-    weight_distribution: f32,
-    long: bool
+    // weight: f32,
+    // weight_distribution: f32,
+    // long: bool
+}
+
+impl Item {
+    pub fn new(id: EntityId, name: String, description: String, size: Size) -> Self {
+        Item { id, name, description, size }
+    }
 }
 
 pub struct Container {
+    id: EntityId,
     name: String,
     description: String,
     contains: Vec<EntityId>,
@@ -42,20 +67,90 @@ pub struct Container {
 }
 
 impl Container {
-    pub fn new(name: String, description: String, contains: Vec<EntityId>, size: Size) -> Self {
-        Container { name, description, contains, size }
+    pub fn new(id: EntityId, name: String, description: String, contains: Vec<EntityId>, size: Size) -> Self {
+        Container { id, name, description, contains, size }
     }
 }
 
+impl Containable for Container {
+    fn put(&mut self, item: ItemId) -> Result<(), &'static str> {
+        todo!()
+    }
+    fn remove(&mut self, item: ItemId) -> Option<Item> {
+        todo!()
+    }
+}
+
+pub struct SecretBottle {
+    id: EntityId,
+    name: String,
+    description: String,
+    contains: Option<EntityId>,
+    liquid: Liquid,
+}
+
+impl SecretBottle {
+    fn put(&mut self, item: ItemId) -> Result<(), &'static str> {
+        todo!()
+    }
+
+    fn remove(&mut self) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            Err("Can't get to it!".to_string())
+        } else {
+            if self.contains.is_some() {
+                println!("You manage to get the {} out of {}.", self.liquid, self.name);
+                self.liquid = Liquid::Air;
+                //self.contains.take();
+                Ok(())
+            } else {
+                Err("There's nothing there!".to_string())
+            }
+        }
+    }
+}
+
+impl LiquidContainable for SecretBottle {
+    fn fill(&mut self, liquid: Liquid) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            self.liquid = liquid;
+            Ok(())
+        } else {
+            Err(format!("The {} is already full", self.name))
+        }
+    }
+
+    fn pour(&mut self) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            Err(format!("The {} is already empty", self.name))
+        } else {
+            self.liquid = Liquid::Air;
+            Ok(())
+        }
+    }
+
+    fn drink(&mut self) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            Err(format!("The {} is empty", self.name))
+        } else {
+            println!("You drink the {} out of {}.", self.liquid, self.name);
+            self.liquid = Liquid::Air;
+            Ok(())
+        }
+    }
+}
+
+
 pub struct TextItem {
+    id: EntityId,
     name: String,
     description: String,
     contents: String,
 }
 
 impl TextItem {
-    pub fn new(name: String, description: String, contents: String) -> Self {
-        TextItem { name, description, contents}
+    pub fn new(id: EntityId, name: String, description: String, contents: String) -> Self {
+        TextItem { id, name, description, contents}
     }
 }
 
@@ -69,13 +164,14 @@ impl Readable for TextItem {
 }
 
 pub struct Food {
+    id: EntityId,
     name: String,
     description: String,
 }
 
 impl Food {
-    pub fn new(name: String, description: String) -> Self {
-        Food { name, description}
+    pub fn new(id: EntityId, name: String, description: String) -> Self {
+        Food { id, name, description}
     }
 }
 
@@ -87,14 +183,16 @@ impl Edible for Food {
     }
 }
 
+#[derive(Debug)]
 pub struct Drink {
+    id: EntityId,
     name: String,
     description: String,
 }
 
 impl Drink {
-    pub fn new(name: String, description: String) -> Self {
-        Drink { name, description}
+    pub fn new(id: EntityId, name: String, description: String) -> Self {
+        Drink { id, name, description}
     }
 }
 
@@ -106,12 +204,63 @@ impl Drinkable for Drink {
     }
 }
 
+pub struct LiquidContainer {
+    id: EntityId,
+    name: String,
+    description: String,
+    liquid: Liquid,
+    //amount: u8,
+}
+
+impl LiquidContainer {
+    pub fn new(id: EntityId, name: String, description: String, liquid: Liquid) -> Self {
+        LiquidContainer { id, name, description, liquid}
+    }
+}
+
+impl LiquidContainable for LiquidContainer {
+    fn fill(&mut self, liquid: Liquid) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            self.liquid = liquid;
+            Ok(())
+        } else {
+            Err(format!("The {} is already full", self.name))
+        }
+    }
+
+    fn pour(&mut self) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            Err(format!("The {} is already empty", self.name))
+        } else {
+            self.liquid = Liquid::Air;
+            Ok(())
+        }
+    }
+
+    fn drink(&mut self) -> Result<(), String> {
+        if self.liquid == Liquid::Air {
+            Err(format!("The {} is empty", self.name))
+        } else {
+            println!("You drink the {} out of {}.", self.liquid, self.name);
+            self.liquid = Liquid::Air;
+            Ok(())
+        }
+    }
+}
+
 
 
 pub trait Containable {
-    fn put(&mut self, item: Item) -> Result<(), &'static str>;
-    fn remove(&mut self, item_id: u32) -> Option<Item>;
+    fn put(&mut self, item: ItemId) -> Result<(), &'static str>;
+    fn remove(&mut self, item: ItemId) -> Option<Item>;
 }
+
+pub trait LiquidContainable {
+    fn fill(&mut self, liquid: Liquid) -> Result<(), String>;
+    fn drink(&mut self) -> Result<(), String>;
+    fn pour(&mut self) -> Result<(), String>;
+}
+
 
 pub trait Openable {
     fn open(&mut self) -> Result<(), &'static str>;

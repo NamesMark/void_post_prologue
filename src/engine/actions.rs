@@ -16,10 +16,13 @@ pub fn look(game_state: &GameState) -> String {
 pub fn look_at(game_state: &GameState, obj_name: &str) -> String {
     let obj_name = obj_name.to_lowercase();
     let article = get_article(&obj_name);
-    
-    match find_entity(game_state, &obj_name) {
+
+    match find_entity_in_room(game_state, &obj_name) {
         Some(entity) => look_at_helper(article, entity.name(), entity.description()),
-        None => format!("There is no {} here to look at.", obj_name),
+        None => match find_entity_in_inventory(game_state, &obj_name) {
+            Some(entity) => look_at_helper(article, entity.name(), entity.description()),
+            None => format!("There is no {} here to look at.", obj_name),
+        },
     }
 }
 
@@ -34,6 +37,9 @@ fn get_article(obj_name: &str) -> &str {
 pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Result<String, String> {
     match game_state.world.get_adjacent_room(&game_state.current_room, direction) {
         Some(new_room) => {
+            if game_state.get_player_access() < game_state.world.get_room_access(&new_room) {
+                return Err(format!("The door beeps with an unsatisfied tone."));
+            }
             game_state.current_room = new_room;
             if !game_state.was_current_room_visited() {
                 game_state.world.set_visited(&game_state.current_room);
@@ -58,28 +64,54 @@ pub fn pick_up(game_state: &mut GameState, obj_name: &str) -> String {
     let obj_name = obj_name.to_lowercase();
     let article = get_article(&obj_name);
 
-    match find_entity(game_state, &obj_name) {
-        Some(entity) => {
-            // Add to the inventory
-            //game_state.inventory.insert(entity.id());
+    if let Some(entity_ref) = find_entity_in_room(game_state, &obj_name) {
+        let entity_id = entity_ref.get_id();
 
-            // Remove from the room
-            if let Some(room) = game_state.world.rooms.get_mut(&game_state.current_room) {
-                room.entities.retain(|&e| e != entity.id());
-            }
+        // Remove from the room
+        if let Some(room) = game_state.world.rooms.get_mut(&game_state.current_room) {
+            room.entities.retain(|&e| e != entity_id);
+        }
 
-            format!("You pick up {}{} and look at it: {}", article, entity.name(), entity.description())
-        },
-        None => format!("There is no {} here.", obj_name),
+        // Add to the inventory
+        match entity_id {
+            EntityId::Item(item_id) => {
+                game_state.inventory.push(item_id);
+
+                if let Some(entity) = game_state.world.entities.get(&entity_id) {
+                    format!("You pick up {}{} and look at it: {}", article, entity.name(), entity.description())
+                } else {
+                    format!("There seems to be a problem picking up the {}.", obj_name)
+                }
+            },
+            _ => format!("You can't pick up the {}.", obj_name),
+        }
+    } else {
+        format!("There is no {} here.", obj_name)
     }
 }
 
-fn find_entity<'a>(game_state: &'a GameState, obj_name: &str) -> Option<&'a dyn Entity> {
-    let entity_ids = game_state.current_room_entities();
+fn find_entity_in_room<'a>(game_state: &'a GameState, obj_name: &str) -> Option<&'a dyn Entity> {
+    let search_name = obj_name.to_lowercase();
 
-    for entity_id in entity_ids {
-        if let Some(entity) = entity_map.get(entity_id) {
-            if entity.name().to_lowercase() == obj_name {
+    if let Some(room_entity_ids) = game_state.current_room_entities() {
+        for entity_id in room_entity_ids {
+            if let Some(entity) = game_state.world.entities.get(entity_id) {
+                if entity.name().to_lowercase() == search_name {
+                    return Some(entity.as_ref());
+                }
+            }
+        }
+    }
+
+    None
+}
+
+fn find_entity_in_inventory<'a>(game_state: &'a GameState, obj_name: &str) -> Option<&'a dyn Entity> {
+    let search_name = obj_name.to_lowercase();
+
+    for item_id in &game_state.inventory {
+        if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
+            if entity.name().to_lowercase() == search_name {
                 return Some(entity.as_ref());
             }
         }
