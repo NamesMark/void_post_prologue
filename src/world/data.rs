@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 use super::room::{RoomAttributes, RoomBlueprint, RoomIdentifier, Direction, Access};
-use crate::entity::furniture::{Furniture, FurnId, Sink};
+use crate::entity::furniture::{Furniture, FurnId, Sink, MainTerminal};
 use crate::entity::item::{Item, ItemId, Container, Food, Drink, TextItem, Size};
 use crate::entity::{Entity, EntityId, PassiveEntity};
+use crate::world::room::PassageType;
 
 use strum::IntoEnumIterator;
 
@@ -28,25 +29,30 @@ impl World {
                 full_description: "Looks like it's used to store janitorial and other miscellaneous items. Mops, buckets, sanitizers and other janitorial equipment are haphazardly put together seemingly without any system.".to_string(),
                 first_thoughts: "You wake up on the steel floor. If you laid there any longer, you'd probably get arthritis, you think. Now, where are we? Let's stand up and see.".to_string(),
                 entities: vec![
+                    EntityId::Furniture(FurnId::Illuminator),
                     EntityId::Furniture(FurnId::StorageShelf),
                     EntityId::Item(ItemId::Bucket),
                 ],
-                connected_rooms: vec![(Direction::East, RoomIdentifier::Mess)],
+                connected_rooms: vec![(Direction::East, PassageType::Door, RoomIdentifier::NorthMess)],
             }
         );
-        rooms.insert(RoomIdentifier::Mess, 
+        rooms.insert(RoomIdentifier::NorthMess, 
             RoomAttributes {
-                room_identifier: RoomIdentifier::Mess,
+                room_identifier: RoomIdentifier::NorthMess,
                 visited: false,
                 access: Access::D,
                 short_description: "You enter a dimly lit medium-sized room, with some tables and a small counter. Looks like the lights are in the emergency power saving mode.".to_string(),
-                full_description: "This room has half a dozen tables with benches, and a small counter with various machines, most likely used for cooking and other canteen-related activities. This looks like the place where the crew would have their meals, and get together for some friendly banter.".to_string(),
-                first_thoughts: "Smells of... biscuits? It feels like I haven't eaten anything for a century.".to_string(),
+                full_description: "This room has half a dozen tables with benches. This looks like the place where the crew would have their meals, and get together for some friendly banter.".to_string(),
+                first_thoughts: "Smells of... biscuits? It feels like I haven't eaten anything for a century. Where is this smell coming from?".to_string(),
                 entities: vec![
                     EntityId::Furniture(FurnId::MessTable),
                     EntityId::Item(ItemId::SpaceRation),
                 ],
-                connected_rooms: vec![(Direction::West, RoomIdentifier::Storage)],
+                connected_rooms: vec![
+                    (Direction::West, PassageType::Door, RoomIdentifier::Storage),
+                    (Direction::North, PassageType::Door, RoomIdentifier::MeetingRoom),
+                    (Direction::South, PassageType::Free, RoomIdentifier::Mess)
+                ],
             }
         );
         rooms.insert(RoomIdentifier::Mess, 
@@ -54,15 +60,80 @@ impl World {
                 room_identifier: RoomIdentifier::Mess,
                 visited: false,
                 access: Access::D,
-                short_description: "You enter a dimly lit medium-sized room, with some tables and a small counter. Looks like the lights are in the emergency power saving mode.".to_string(),
-                full_description: "This room has half a dozen tables with benches, and a small counter with various machines, most likely used for cooking and other canteen-related activities. This looks like the place where the crew would have their meals, and get together for some friendly banter.".to_string(),
-                first_thoughts: "Smells of... biscuits? It feels like I haven't eaten anything for a century.".to_string(),
+                short_description: "You walk to the middle of the room. Now you stand near a small counter with various machines.".to_string(),
+                full_description: "In front of you is a small counter with various machines, most likely used for cooking and other canteen-related activities.".to_string(),
+                first_thoughts: "The smell is stronger! I think it's here.".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::MessTable),
+                    EntityId::Furniture(FurnId::Counter),
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Free, RoomIdentifier::NorthMess),
+                    (Direction::South, PassageType::Free, RoomIdentifier::SouthMess)
+                ],
+            }
+        );
+
+        rooms.insert(RoomIdentifier::SouthMess, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::SouthMess,
+                visited: false,
+                access: Access::D,
+                short_description: "You are at the southern wall of this room. There's a door farther south, and another one to the west.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Free, RoomIdentifier::Mess),
+                    (Direction::South, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                    (Direction::West, PassageType::Door, RoomIdentifier::PassengersRoom),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::Bridge, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::Mess,
+                visited: false,
+                access: Access::A,
+                short_description: "You are at the bridge. It's the brain of any ship, all the most important controls are here.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "I bet this room is the key to getting off this tincan!".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::MainTerminal),
+                ],
+                connected_rooms: vec![(Direction::South, PassageType::Door, RoomIdentifier::MeetingRoom)],
+            }
+        );
+        rooms.insert(RoomIdentifier::MeetingRoom, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::Mess,
+                visited: false,
+                access: Access::B,
+                short_description: "Meeting room".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Door, RoomIdentifier::Bridge),
+                    (Direction::South, PassageType::Door, RoomIdentifier::NorthMess)
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::PassengersRoom, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::PassengersRoom,
+                visited: false,
+                access: Access::D,
+                short_description: "You enter quite a stylishly decorated and mostly clean room.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "It was probably reserved for passengers of status. Doesn't seem like it was used much... for a long time.".to_string(),
                 //potential_items: vec![], 
                 entities: vec![
-                    EntityId::Furniture(FurnId::MessTable),
-                    EntityId::Item(ItemId::SpaceRation),
+
                 ],
-                connected_rooms: vec![(Direction::West, RoomIdentifier::Storage)],
+                connected_rooms: vec![(Direction::East, PassageType::Door, RoomIdentifier::Mess)],
             }
         );
 
@@ -107,7 +178,7 @@ impl World {
             FurnId::Counter => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::Counter),
                 "Counter".to_string(),
-                vec![],
+                vec!["countertop".to_string()],
                 "The counter is cluttered with various kitchen gadgets and utensils. A half-eaten plate of biscuits sits abandoned, as if the eater left in a hurry. A small, handwritten note peeks out from under the plate.".to_string(),
                 vec![
                     EntityId::Item(ItemId::CounterNote),
@@ -139,7 +210,13 @@ impl World {
                 "The water from the tap is supposed to be potable... mostly.".to_string(),
                 vec![EntityId::Item(ItemId::Fork)],
             )),
-            
+            FurnId::MainTerminal => Box::new(MainTerminal::new(
+                EntityId::Furniture(FurnId::MainTerminal),
+                "Main terminal".to_string(),
+                vec!["terminal".to_string(), "control terminal".to_string()],
+                "".to_string(),
+                vec![EntityId::Item(ItemId::Fork)],
+            )),
 
 
 
@@ -152,7 +229,7 @@ impl World {
                 "Heavy dust in the corners of this room.".to_string(),
                 vec![],
             )),
-            _ => unimplemented!(),
+            //_ => unimplemented!(),
         }
     }
     
@@ -318,11 +395,11 @@ impl World {
         }
     }
 
-    pub fn get_adjacent_room(&self, room_id: &RoomIdentifier, direction: Direction) -> Option<RoomIdentifier> {
+    pub fn get_adjacent_room(&self, room_id: &RoomIdentifier, direction: Direction) -> Option<(RoomIdentifier, &PassageType)> {
         if let Some(room_attributes) = self.rooms.get(&room_id) {
-            for (dir, adjacent_room_id) in &room_attributes.connected_rooms {
+            for (dir, passageType, adjacent_room_id) in &room_attributes.connected_rooms {
                 if *dir == direction {
-                    return Some(*adjacent_room_id);
+                    return Some((*adjacent_room_id, passageType));
                 }
             }
         }

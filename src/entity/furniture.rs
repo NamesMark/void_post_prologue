@@ -11,11 +11,12 @@ pub enum FurnId {
     CoffeeMachine,
     FoodPrinter,
     Sink,
+    MainTerminal,
     #[default]
     Dust
 }
 
-impl_entity!(Furniture, Sink);
+impl_entity!(Furniture, Sink, MainTerminal);
 
 pub struct Furniture {
     id: EntityId,
@@ -43,5 +44,19 @@ pub struct Sink {
 impl Sink {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
         Sink { id, name, aliases, description, contains, tap_is_on: false }
+    }
+}
+
+pub struct MainTerminal {
+    id: EntityId,
+    name: String,
+    aliases: Vec<String>,
+    description: String,
+    contains: Vec<EntityId>, 
+}
+
+impl MainTerminal {
+    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
+        MainTerminal { id, name, aliases, description, contains}
     }
 }

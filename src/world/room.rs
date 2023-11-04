@@ -5,8 +5,13 @@ use std::cmp::Ordering;
 #[derive(EnumIter, Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum RoomIdentifier {
     Storage,
+    NorthMess,
     Mess,
+    SouthMess,
+    MeetingRoom,
+    Bridge,
     PassengersRoom,
+    AirlockCorridor,
     BosunsRoom,
     CaptainsRoom,
     AirlockA,
@@ -34,6 +39,13 @@ pub enum Access {
     Broken,
     None,
 }
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum PassageType {
+    Door,
+    Free,
+}
+
 
 impl Access {
     fn value(&self) -> i32 {
@@ -71,7 +83,7 @@ pub struct RoomAttributes {
     //pub potential_items: Vec<ItemBlueprint>,
     //pub furniture: Vec<Furniture>,
     pub entities: Vec<EntityId>,
-    pub connected_rooms: Vec<(Direction, RoomIdentifier)>,
+    pub connected_rooms: Vec<(Direction, PassageType, RoomIdentifier)>,
 }
 
 pub enum RoomBlueprint {

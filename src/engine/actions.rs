@@ -3,7 +3,7 @@ use std::cmp::max;
 use rand::prelude::SliceRandom;
 
 use crate::engine::state::GameState;
-use crate::world::room::{Direction, Access};
+use crate::world::room::{Direction, Access, PassageType};
 use crate::entity::{Entity, EntityId};
 use crate::entity::item::ItemId;
 
@@ -41,16 +41,19 @@ fn get_article(obj_name: &str) -> &str {
 pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Result<String, String> {
     match game_state.world.get_adjacent_room(&game_state.current_room, direction) {
         Some(new_room) => {
-            if get_player_access(game_state) < *game_state.world.get_room_access(&new_room) {
-                return Err(format!("The door beeps with an unsatisfied tone."));
+            if (new_room.1) == &PassageType::Door {
+                if get_player_access(game_state) < *game_state.world.get_room_access(&(new_room.0)) {
+                    return Err(format!("The door beeps with an unsatisfied tone."));
+                }
+                print_any!(
+                    "The door beeps with quiet acknowledgement and slides aside.",
+                    "*Shhhhht* - the door slides open.",
+                    "The door opens with no apparent effort from your side.",
+                    "The door opened so fast as if it predicted your intention."
+                );
             }
-            game_state.current_room = new_room;
-            print_any!(
-                "The door beeps with quiet acknowledgement and slides aside.",
-                "*Shhhhht* - the door slides open.",
-                "The door opens with no apparent effort from your side.",
-                "The door opened so fast as if it predicted your intention."
-            );
+            game_state.current_room = new_room.0;
+
             if !game_state.was_current_room_visited() {
                 game_state.world.set_visited(&game_state.current_room);
                 Ok(format!("{}\n{}", game_state.current_room_first_thoughts(), game_state.current_room_description()))
@@ -62,7 +65,7 @@ pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Re
     }
 }
 
-pub fn get_player_access(game_state: &mut GameState) -> Access {
+pub fn get_player_access(game_state: &GameState) -> Access {
     let mut highest_access = Access::None;
 
     for item_id in &game_state.inventory {
@@ -121,8 +124,15 @@ fn find_entity_in_room<'a>(game_state: &'a GameState, obj_name: &str) -> Option<
     if let Some(room_entity_ids) = game_state.current_room_entities() {
         for entity_id in room_entity_ids {
             if let Some(entity) = game_state.world.entities.get(entity_id) {
+                println!("Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
                 if entity.name().to_lowercase() == search_name {
                     return Some(entity.as_ref());
+                }
+                for alt_name in entity.aliases() {
+                    println!("Comparing: '{}' with '{}'", alt_name, search_name);
+                    if *alt_name == search_name {
+                        return Some(entity.as_ref());
+                    }
                 }
             }
         }
@@ -138,6 +148,11 @@ fn find_entity_in_inventory<'a>(game_state: &'a GameState, obj_name: &str) -> Op
         if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
             if entity.name().to_lowercase() == search_name {
                 return Some(entity.as_ref());
+            }
+            for alt_name in entity.aliases() {
+                if *alt_name == search_name {
+                    return Some(entity.as_ref());
+                }
             }
         }
     }
