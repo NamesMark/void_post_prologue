@@ -1,5 +1,7 @@
 use strum_macros::EnumIter;
+use std::any::Any;
 use super::{Entity, EntityId};
+use super::item::{ItemId, Containable};
 use crate::impl_entity;
 
 #[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -58,5 +60,9 @@ pub struct MainTerminal {
 impl MainTerminal {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
         MainTerminal { id, name, aliases, description, contains}
+    }
+
+    pub fn enter_command() {
+        todo!()
     }
 }

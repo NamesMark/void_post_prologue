@@ -1,6 +1,7 @@
-use crate::impl_entity;
+use crate::{impl_entity, impl_entity_containable};
+use std::any::Any;
 use strum_macros::{EnumIter, Display};
-use super::EntityId;
+use super::{Entity, EntityId};
 
 #[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ItemId {
@@ -40,7 +41,8 @@ pub enum Liquid {
     Air,
 }
 
-impl_entity!(Item, Container, Food, Drink, TextItem, SecretBottle);
+impl_entity!(Item, Food, Drink, TextItem, SecretBottle);
+impl_entity_containable!(Container);
 
 pub struct Item {
     id: EntityId,
@@ -72,14 +74,37 @@ impl Container {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>, size: Size) -> Self {
         Container { id, name, aliases, description, contains, size }
     }
-}
-
-impl Containable for Container {
-    fn put(&mut self, item: ItemId) -> Result<(), &'static str> {
-        todo!()
+    pub fn as_container(entity: &dyn Entity) -> Option<&Container> {
+        entity.as_any().downcast_ref::<Container>()
     }
     fn remove(&mut self, item: ItemId) -> Option<Item> {
         todo!()
+    }
+
+}
+
+impl Containable for Container {
+    fn can_contain(&self, entity_id: EntityId) -> bool {
+        !self.contains.contains(&entity_id)
+    }
+    fn put(&mut self, entity_id: EntityId) -> Result<(), String> {
+        if self.can_contain(entity_id) {
+            self.contains.push(entity_id);
+            Ok(())
+        } else {
+            Err(format!("The {} cannot contain any more items.", self.name))
+        }
+    }
+    fn remove(&mut self, entity_id: EntityId) -> Result<(), String> {
+        if let Some(index) = self.contains.iter().position(|&id| id == entity_id) {
+            self.contains.remove(index);
+            Ok(())
+        } else {
+            Err(format!("{} is not in the {}.", entity_id, self.name))
+        }
+    }
+    fn contains(&self) -> &Vec<EntityId> {
+        &self.contains
     }
 }
 
@@ -258,8 +283,10 @@ impl LiquidContainable for LiquidContainer {
 
 
 pub trait Containable {
-    fn put(&mut self, item: ItemId) -> Result<(), &'static str>;
-    fn remove(&mut self, item: ItemId) -> Option<Item>;
+    fn can_contain(&self, entity_id: EntityId) -> bool;
+    fn put(&mut self, entity_id: EntityId) -> Result<(), String>;
+    fn remove(&mut self, entity_id: EntityId) -> Result<(), String>;
+    fn contains(&self) -> &Vec<EntityId>;
 }
 
 pub trait LiquidContainable {

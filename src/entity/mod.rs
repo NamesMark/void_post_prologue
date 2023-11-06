@@ -1,11 +1,14 @@
 pub mod item;
 pub mod furniture;
 
-use furniture::FurnId;
-use item::ItemId;
-use strum_macros::EnumIter;
+use std::any::Any;
 
-#[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
+
+use furniture::FurnId;
+use item::{ItemId, Containable};
+use strum_macros::{EnumIter, Display};
+
+#[derive(EnumIter, Default, Debug, Display, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum EntityId {
     Item(ItemId),
     Furniture(FurnId),
@@ -18,6 +21,9 @@ pub trait Entity {
     fn name(&self) -> &str;
     fn aliases(&self) -> &Vec<String>;
     fn description(&self) -> &str;
+    fn as_any(&self) -> &dyn Any;
+    fn as_any_mut(&mut self) -> &mut dyn Any;
+    fn as_containable(&self) -> Option<&dyn Containable>;
 }
 
 pub struct PassiveEntity {
@@ -52,8 +58,53 @@ macro_rules! impl_entity {
             fn description(&self) -> &str {
                 &self.description
             }
+
+            fn as_any(&self) -> &dyn Any {
+                self
+            }
+            fn as_any_mut(&mut self) -> &mut dyn Any {
+                self
+            }
+            fn as_containable(&self) -> Option<&dyn crate::entity::Containable> {
+                None
+            }
         })*
     };
+}
+
+#[macro_export]
+macro_rules! impl_entity_containable {
+    ($($type:ty),*) => {
+        $(
+            impl crate::entity::Entity for $type {
+                fn get_id(&self) -> EntityId {
+                    self.id
+                }
+    
+                fn name(&self) -> &str {
+                    &self.name
+                }
+    
+                fn aliases(&self) -> &Vec<String> {
+                    &self.aliases
+                }
+            
+                fn description(&self) -> &str {
+                    &self.description
+                }
+    
+                fn as_any(&self) -> &dyn Any {
+                    self
+                }
+                fn as_any_mut(&mut self) -> &mut dyn Any {
+                    self
+                }
+                fn as_containable(&self) -> Option<&dyn crate::entity::Containable> {
+                    Some(self)
+                }
+            }
+        )*
+    }
 }
 
 impl_entity!(PassiveEntity);

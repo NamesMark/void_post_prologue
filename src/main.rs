@@ -6,6 +6,7 @@ mod parser;
 mod world;
 mod entity;
 
+
 //use world::World;
 use world::room::RoomIdentifier;
 use world::room::Direction;
@@ -58,6 +59,11 @@ fn process_input(game_state: &mut GameState, command: Option<Command>) {
         // Take(String),         // Take an object
         Some(Command::Take(obj)) => println!("{}", actions::pick_up(game_state, &obj)),
         // Drop(String),         // Drop an object
+        Some(Command::Drop(obj)) => println!("{}", actions::drop(game_state, &obj)),
+        //TakeFrom(String, String), // Take from a container
+        Some(Command::TakeFrom(obj, cont)) => println!("{}", actions::take_from_container(game_state, &obj, &cont)),
+        //PutInto(String, String), // Put into a container
+        Some(Command::PutInto(obj, cont)) => println!("{}", actions::put_into(game_state, &obj, &cont)),
         // Use(String),          // Use an object
         // Combine(String, String), // Combine two items
         // Push(String),         // Push something

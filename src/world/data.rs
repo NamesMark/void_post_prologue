@@ -386,6 +386,9 @@ impl World {
     pub fn get_room_entities(&self, room_id: &RoomIdentifier) -> Option<&Vec<EntityId>> {
         self.rooms.get(room_id).map(|room| &room.entities)
     }
+    pub fn get_room_entities_mut(&mut self, room_id: &RoomIdentifier) -> Option<&mut Vec<EntityId>> {
+        self.rooms.get_mut(room_id).map(|room| &mut room.entities)
+    }
 
     pub fn get_room_access(&self, room_id: &RoomIdentifier) -> &Access {
         if let Some(room) = self.rooms.get(room_id) {
@@ -405,5 +408,16 @@ impl World {
         }
 
         None 
+    }
+
+    pub fn get_container(&self, entity_id: EntityId) -> Option<&Container> {
+        self.entities.get(&entity_id).and_then(|entity| {
+            entity.as_any().downcast_ref::<Container>()
+        })
+    }
+    pub fn get_container_mut(&mut self, entity_id: EntityId) -> Option<&mut Container> {
+        self.entities.get_mut(&entity_id).and_then(|entity| {
+            entity.as_any_mut().downcast_mut::<Container>()
+        })
     }
 }

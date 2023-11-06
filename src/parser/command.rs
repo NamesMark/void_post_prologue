@@ -13,6 +13,8 @@ pub enum Command {
     // Interaction
     Take(String),         // Take an object
     Drop(String),         // Drop an object
+    TakeFrom(String, String), // Take from a container
+    PutInto(String, String), // Put into a container
     Use(String),          // Use an object
     Combine(String, String), // Combine two items
     Push(String),         // Push something
@@ -47,12 +49,15 @@ pub fn parse(input: &str) -> Option<Command> {
         ["open", obj] | ["o", obj] => Some(Command::Open(obj.to_string())),
         ["close", obj] | ["c", obj] => Some(Command::Close(obj.to_string())),
 
-        ["take", obj] => Some(Command::Take(obj.to_string())),
+        ["take", obj] | ["get", obj] | ["pick", "up", obj] => Some(Command::Take(obj.to_string())),
+        ["take", obj, "from", cont] | ["get", obj, "from", cont] | ["pick", "up", obj, "from", cont] | ["pick", obj, "from", cont] | ["retrieve", obj, "from", cont] => Some(Command::TakeFrom(obj.to_string(), cont.to_string())),
+        ["put", obj, "into", cont] | ["place", obj, "into", cont] => Some(Command::PutInto(obj.to_string(), cont.to_string())),
+
         ["drop", obj] => Some(Command::Drop(obj.to_string())),
         ["use", obj] => Some(Command::Use(obj.to_string())),
-        ["combine", obj1, "with", obj2] => Some(Command::Combine(obj1.to_string(), obj2.to_string())),
-        ["push", obj] => Some(Command::Push(obj.to_string())),
-        ["pull", obj] => Some(Command::Pull(obj.to_string())),
+        //["combine", obj1, "with", obj2] => Some(Command::Combine(obj1.to_string(), obj2.to_string())),
+        //["push", obj] => Some(Command::Push(obj.to_string())),
+        //["pull", obj] => Some(Command::Pull(obj.to_string())),
         ["turn", obj] => Some(Command::Turn(obj.to_string())),
         ["read", obj] => Some(Command::Read(obj.to_string())),
         // ["talk", "to", person] => Some(Command::TalkTo(person.to_string())),
