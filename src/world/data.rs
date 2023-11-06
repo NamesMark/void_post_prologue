@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use super::room::{RoomAttributes, RoomBlueprint, RoomIdentifier, Direction, Access};
+use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
 use crate::entity::furniture::{Furniture, FurnId, Sink, MainTerminal};
 use crate::entity::item::{Item, ItemId, Container, Food, Drink, TextItem, Size};
 use crate::entity::{Entity, EntityId, PassiveEntity};
@@ -69,7 +69,40 @@ impl World {
                 ],
                 connected_rooms: vec![
                     (Direction::North, PassageType::Free, RoomIdentifier::NorthMess),
+                    (Direction::East, PassageType::Door, RoomIdentifier::CrewCabins),
                     (Direction::South, PassageType::Free, RoomIdentifier::SouthMess)
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::CrewCabins, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::CrewCabins,
+                visited: false,
+                access: Access::D,
+                short_description: "Crew Cabins Corridor".to_string(),
+                full_description: "A narrow hallway lined with personal quarters extends before you. The lighting is dim, flickering slightly, adding to the air of weary privacy that pervades this space.".to_string(),
+                first_thoughts: "You wonder how many people called this place home? Has the same crew operated this vessel from the beginning, or did many generations change? There are probably countless stories and memories embedded in these walls, which you probably won't ever know.".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::West, PassageType::Door, RoomIdentifier::Mess),
+                    (Direction::North, PassageType::Door, RoomIdentifier::BosunsRoom)
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::BosunsRoom, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::BosunsRoom,
+                visited: false,
+                access: Access::D,
+                short_description: "Bosun's Command".to_string(),
+                full_description: "This spartan room bears the mark of authority and order. A large, sturdy desk with neatly arranged tools and documents dominates the space. Personal effects are few but chosen with care, perhaps tokens of past voyages or loved ones afar.".to_string(),
+                first_thoughts: "Ah, an unmistacable spartan style of a bosun. You've met people like this before.".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::BosunDesk),
+                ],
+                connected_rooms: vec![
+                    (Direction::South, PassageType::Door, RoomIdentifier::CrewCabins)
                 ],
             }
         );
@@ -88,6 +121,137 @@ impl World {
                     (Direction::North, PassageType::Free, RoomIdentifier::Mess),
                     (Direction::South, PassageType::Door, RoomIdentifier::AirlockCorridor),
                     (Direction::West, PassageType::Door, RoomIdentifier::PassengersRoom),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::AirlockCorridor, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::AirlockCorridor,
+                visited: false,
+                access: Access::D,
+                short_description: "This is a tight corridor.".to_string(),
+                full_description: "This is a corridor that is used to enter and exit this vessel. It has two airlocks on the opposite ends of it.".to_string(),
+                first_thoughts: "It feels kinda... fresh in here?".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Door, RoomIdentifier::SouthMess),
+                    (Direction::West, PassageType::Door, RoomIdentifier::AirlockA),
+                    (Direction::East, PassageType::Door, RoomIdentifier::AirlockB),
+                    (Direction::Down, PassageType::Door, RoomIdentifier::TechCorridor),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::AirlockA, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::AirlockA,
+                visited: false,
+                access: Access::D,
+                short_description: "You squeeze into a tiny square space used to get to and from the shuttle.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::WarningSign),
+                ],
+                connected_rooms: vec![
+                    (Direction::West, PassageType::Door, RoomIdentifier::OpenSpaceAirlockA),
+                    (Direction::East, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::OpenSpaceAirlockA, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::OpenSpaceAirlockA,
+                visited: false,
+                access: Access::D,
+                short_description: "".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::East, PassageType::Door, RoomIdentifier::AirlockA),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::AirlockB, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::AirlockB,
+                visited: false,
+                access: Access::D,
+                short_description: "You squeeze into a tiny square space used to get to and from the shuttle.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::WarningSign),
+                ],
+                connected_rooms: vec![
+                    (Direction::East, PassageType::Door, RoomIdentifier::OpenSpaceAirlockB),
+                    (Direction::West, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::OpenSpaceAirlockB, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::OpenSpaceAirlockB,
+                visited: false,
+                access: Access::D,
+                short_description: "".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::West, PassageType::Door, RoomIdentifier::AirlockB),
+                ],
+            }
+        );
+        
+        rooms.insert(RoomIdentifier::TechCorridor, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::TechCorridor,
+                visited: false,
+                access: Access::D,
+                short_description: "You enter a technical corridor in the lower deck of the shuttle.".to_string(),
+                full_description: "This space is apparently used to access various systems related to the shuttle drive, energy and life systems.".to_string(),
+                first_thoughts: "I've never been in a tight cave, but I imagine it feels something like this.".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::Up, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                    (Direction::South, PassageType::Door, RoomIdentifier::EngineRoom),
+                    (Direction::North, PassageType::Free, RoomIdentifier::TechCorridorNorth),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::EngineRoom, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::EngineRoom,
+                visited: false,
+                access: Access::D,
+                short_description: "You enter the heart of the shuttle: it's engine room.".to_string(),
+                full_description: "The room is full of different mechanisms and machines, most of which are a mystery to you. But you are pretty sure that the biggest thing in the middle of the room is the main thrust engine.".to_string(),
+                first_thoughts: "It smells of grease and soot. One would think the engines would smell differently in the space age.".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::MainEngine),
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Free, RoomIdentifier::TechCorridor),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::TechCorridorNorth, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::TechCorridorNorth,
+                visited: false,
+                access: Access::D,
+                short_description: "The north section of the same technical corridor.".to_string(),
+                full_description: "".to_string(),
+                first_thoughts: "".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
+                    (Direction::South, PassageType::Free, RoomIdentifier::TechCorridor),
                 ],
             }
         );
@@ -136,6 +300,7 @@ impl World {
                 connected_rooms: vec![(Direction::East, PassageType::Door, RoomIdentifier::Mess)],
             }
         );
+
 
         // ... Repeat for other rooms
 
@@ -214,10 +379,29 @@ impl World {
                 EntityId::Furniture(FurnId::MainTerminal),
                 "Main terminal".to_string(),
                 vec!["terminal".to_string(), "control terminal".to_string()],
-                "".to_string(),
-                vec![EntityId::Item(ItemId::Fork)],
+                "This is the main terminal of the shuttle. The message on the display says: \"There was a problem with your payment. Your subscription to the ShuttleControlOS has been suspended. Please top up your account to regain control of the {$$shuttle_name$$}.\"".to_string(),
+                vec![],
             )),
-
+            FurnId::WarningSign => Box::new(PassiveEntity::new(
+                EntityId::Furniture(FurnId::WarningSign),
+                "Warning sign".to_string(), 
+                vec!["sign".to_string()],
+                "A worn sign is bolted to the wall. On it you see a figure clutching hands at their neck, their face is blue. I wonder what could it mean?".to_string()
+                //A stark warning sign is bolted to the wall, its edges worn and paint peeling from age. It depicts a figure in stark black against a bright yellow background, hands clutched at the throat in a universal gesture of asphyxiation. Below the grim pictogram, faded letters offer a silent admonishment: 'Caution: Vacuum Zone – Use Appropriate Life Support Equipment'. The message is clear - without a suit, death is both certain and swift.
+            )),
+            FurnId::MainEngine => Box::new(PassiveEntity::new(
+                EntityId::Furniture(FurnId::MainEngine),
+                "Main engine".to_string(), 
+                vec!["engine".to_string()],
+                "The Main Engine of the shuttle, a compact module of practical engineering, is bolted firmly to the rear compartment. You are pretty sure that at some point its surface was shiny, with bright yellow details. Now all of it has a uniform dirty-grey color, with smudges of soot and grease. It's not the clean, high-tech wonder you might find on larger or more expensive vessels, but it's the heart of this shuttle, dependable and resilient. It looks fully functional.".to_string()
+            )),
+            FurnId::BosunDesk => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::BosunDesk),
+                "Bosun's desk".to_string(), 
+                vec!["desk".to_string(), "bosun desk".to_string(), "bosun's desk".to_string()],
+                "A robust and no-nonsense piece of furniture, the Bosun's Desk stands as a testament to practicality over aesthetics. The surface is littered with charts, navigational tools, and the occasional personal memento. Each drawer looks to be meticulously labeled, and the desk's well-worn edges suggest years of service and countless hours of diligent work.".to_string(),
+                vec![EntityId::Item(ItemId::BosunCard)],
+            )),
 
 
             // other cases...
@@ -314,22 +498,32 @@ impl World {
                 EntityId::Item(ItemId::AssistantCard),
                 "Assistant Card".to_string(),
                 vec!["card".to_string()],
-                "".to_string(),
+                "This rectangle piece of light-grey plastic bears the name 'Alexis Jericho - Staff Assistant'. The text is printed directly over a stylized 'D', embossed in the background. It's clearly not yours, but you are pretty sure you won't get anywhere on the shuttle without some form of identification. The edges are worn smooth from handling, suggesting a history of frequent use.".to_string(),    
                 Size::Small,
             )),
             ItemId::BosunCard => Box::new(Item::new(
                 EntityId::Item(ItemId::BosunCard),
                 "Bosun Card".to_string(),
-                vec!["card".to_string()],
-                "".to_string(),
+                vec!["card".to_string(), "access card".to_string(), "bosun's card".to_string()],
+                "The Bosun Card feels heavy with authority, a sturdy plastic keycard emblazoned with the title 'Bosun' in authoritative block letters. Below the title, a holographic strip winks with secure coding, promising access to the ship's vital operational areas. It's the kind of card that opens more doors than just the physical ones.".to_string(),
                 Size::Small,
             )),
             ItemId::CaptainCard => Box::new(Item::new(
                 EntityId::Item(ItemId::CaptainCard),
                 "Captain Card".to_string(),
-                vec!["card".to_string()],
-                "".to_string(),
+                vec!["card".to_string(), "access card".to_string(), "captain's card".to_string()],
+                "This Captain Card is the pinnacle of any ship's hierarchy, with its crisp edges and the gilded 'Captain' inscription that seems to command respect on its own. A faint scent of leather clings to it, as if it has spent most of its time in the pocket of someone decisive. Its clearance is unmatched.".to_string(),
                 Size::Small,
+            )),
+            ItemId::SpaceSuit => Box::new(Item::new(
+                EntityId::Item(ItemId::SpaceSuit),
+                "Space Suit".to_string(),
+                vec![
+                    "suit".to_string(),
+                    "spacesuit".to_string()
+                    ],
+                "A typical space suit to be safe on short space walks.".to_string(),
+                Size::Medium,
             )),
 
 

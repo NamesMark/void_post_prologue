@@ -16,13 +16,14 @@ pub enum ItemId {
     FoodSurrogateBottle,
     Fork,
     LuckyCoin,
-
-
-
+    
+    
     AssistantCard,
     BosunCard,
     CaptainCard,
-    
+
+    SpaceSuit,
+
     #[default]
     Dust
 }

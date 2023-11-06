@@ -3,7 +3,7 @@ use std::cmp::max;
 use rand::prelude::SliceRandom;
 
 use crate::engine::state::GameState;
-use crate::world::room::{Direction, Access, PassageType};
+use crate::world::room::{Direction, Access, PassageType, RoomIdentifier};
 use crate::entity::{Entity, EntityId, self};
 use crate::entity::item::{ItemId, Containable};
 
@@ -100,12 +100,23 @@ pub fn move_in_direction(game_state: &mut GameState, direction: Direction) -> Re
 
             if !game_state.was_current_room_visited() {
                 game_state.world.set_visited(&game_state.current_room);
+                exit_if_no_spacesuit(&game_state);
+
                 Ok(format!("{}\n{}", game_state.current_room_first_thoughts(), game_state.current_room_description()))
             } else {
                 Ok(game_state.current_room_description().to_string())
             }
         },
         None => Err(format!("Can't go in the direction of {}.", direction))
+    }
+}
+
+pub fn exit_if_no_spacesuit(game_state: &GameState) {
+    if game_state.current_room == RoomIdentifier::OpenSpaceAirlockA || game_state.current_room == RoomIdentifier::OpenSpaceAirlockB {
+        if !game_state.inventory.contains(&ItemId::SpaceSuit) {
+            println!("You gasp for air, and your head feels like it's exploding. You try to reach for a handrail to get back into the airlock but can't quite catch it. Everything turns black.\n\nYou are pretty sure you just died.");
+            std::process::exit(0);
+        }
     }
 }
 
@@ -325,10 +336,12 @@ fn find_entity_in_inventory<'a>(game_state: &'a GameState, obj_name: &str) -> Op
 
     for item_id in &game_state.inventory {
         if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
+            eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
             if entity.name().to_lowercase() == search_name {
                 return Some(entity.as_ref());
             }
             for alt_name in entity.aliases() {
+                eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
                 if *alt_name == search_name {
                     return Some(entity.as_ref());
                 }
@@ -345,8 +358,15 @@ fn find_containable_entity_in_room(game_state: &GameState, cont_name: &str) -> O
     if let Some(room_entity_ids) = game_state.current_room_entities() {
         for entity_id in room_entity_ids {
             if let Some(entity) = game_state.world.entities.get(entity_id) {
+                eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
                 if entity.name().to_lowercase() == search_name {
                     if entity.as_containable().is_some() {
+                        return Some(*entity_id);
+                    }
+                }
+                for alt_name in entity.aliases() {
+                    eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
+                    if *alt_name == search_name {
                         return Some(*entity_id);
                     }
                 }
@@ -362,8 +382,15 @@ fn find_containable_entity_in_inventory(game_state: &GameState, cont_name: &str)
     for item_id in &game_state.inventory {
         let entity_id = EntityId::Item(*item_id);
         if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
+            eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
                 if entity.name().to_lowercase() == search_name {
                     if entity.as_containable().is_some() {
+                        return Some(entity_id);
+                    }
+                }
+                for alt_name in entity.aliases() {
+                    eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
+                    if *alt_name == search_name {
                         return Some(entity_id);
                     }
                 }

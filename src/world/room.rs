@@ -12,13 +12,17 @@ pub enum RoomIdentifier {
     Bridge,
     PassengersRoom,
     AirlockCorridor,
+    AirlockA,
+    OpenSpaceAirlockA,
+    AirlockB,
+    OpenSpaceAirlockB,
+    TechCorridor,
+    TechCorridorNorth,
+    EngineRoom,
     BosunsRoom,
     CaptainsRoom,
-    AirlockA,
     StorageHold,
-    Engine,
-    Hallway,
-    Cockpit,
+    CrewCabins
 }
 
 #[derive(Display, PartialEq, Clone, Copy)]
@@ -86,18 +90,18 @@ pub struct RoomAttributes {
     pub connected_rooms: Vec<(Direction, PassageType, RoomIdentifier)>,
 }
 
-pub enum RoomBlueprint {
-    Storage(RoomAttributes),
-    Mess(RoomAttributes),
-    PassengersRoom(RoomAttributes),
-    BosunsRoom(RoomAttributes),
-    CaptainsRoom(RoomAttributes),
-    AirlockA(RoomAttributes),
-    StorageHold(RoomAttributes),
-    Engine(RoomAttributes),
-    Hallway(RoomAttributes),
-    Cockpit(RoomAttributes),
-}
+// pub enum RoomBlueprint {
+//     Storage(RoomAttributes),
+//     Mess(RoomAttributes),
+//     PassengersRoom(RoomAttributes),
+//     BosunsRoom(RoomAttributes),
+//     CaptainsRoom(RoomAttributes),
+//     AirlockA(RoomAttributes),
+//     StorageHold(RoomAttributes),
+//     Engine(RoomAttributes),
+//     Hallway(RoomAttributes),
+//     Cockpit(RoomAttributes),
+// }
 
 // impl RoomBlueprint {
 //     pub fn description(&self) -> &str {

@@ -14,6 +14,12 @@ pub enum FurnId {
     FoodPrinter,
     Sink,
     MainTerminal,
+    BosunDesk,
+
+    MainEngine,
+
+
+    WarningSign,
     #[default]
     Dust
 }
@@ -65,4 +71,11 @@ impl MainTerminal {
     pub fn enter_command() {
         todo!()
     }
+}
+
+enum MainTerminalCommand {
+    ActivateMainEngines,
+    ActivateManeurEngines,
+    SwitchToFuelTankB,
+
 }
