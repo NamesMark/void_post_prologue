@@ -21,16 +21,18 @@ pub fn look(game_state: &GameState) -> String {
         }
         if output.ends_with(", ") {
             output.truncate(output.len() - 2);
+            output.push('.');
+        } else {
+            output = "There's no items here.".to_string();
         }
-        output.push('.');
 
-        output.push_str("\nYou can get to:");
+        output.push_str("\nYou can get to: ");
         for (direction, passage_type, _room_id) in &room_attributes.connected_rooms {
             let passage_description = match passage_type {
                 PassageType::Door => "a door to the",
                 PassageType::Free => "continue to the",
             };
-            output.push_str(&format!(" {} {}", passage_description, direction));
+            output.push_str(&format!("{} {}", passage_description, direction));
             output.push_str(", ");
         }
         if output.ends_with(", ") {
@@ -150,17 +152,16 @@ pub fn pick_up(game_state: &mut GameState, obj_name: &str) -> String {
     if let Some(entity_ref) = find_entity_in_room(game_state, &obj_name) {
         let entity_id = entity_ref.get_id();
 
-        // Remove from the room
-        if let Some(room) = game_state.world.rooms.get_mut(&game_state.current_room) {
-            room.entities.retain(|&e| e != entity_id);
-        }
-
         // Add to the inventory
         match entity_id {
             EntityId::Item(item_id) => {
                 game_state.inventory.push(item_id);
 
                 if let Some(entity) = game_state.world.entities.get(&entity_id) {
+                    // Remove from the room
+                    if let Some(room) = game_state.world.rooms.get_mut(&game_state.current_room) {
+                        room.entities.retain(|&e| e != entity_id);
+                    }
                     format!("You pick up {}{} and look at it: {}", article, entity.name(), entity.description())
                 } else {
                     format!("There seems to be a problem picking up the {}.", obj_name)
@@ -204,50 +205,36 @@ pub fn drop(game_state: &mut GameState, obj_name: &str) -> String {
 
 pub fn put_into(game_state: &mut GameState, obj_name: &str, cont_name: &str) -> String {
     let obj_name = obj_name.to_lowercase();
-    let article = get_article(&obj_name);
-
+    let cont_name = cont_name.to_lowercase();
+    
+    // Find the object in the inventory
     if let Some(obj_entity_ref) = find_entity_in_inventory(game_state, &obj_name) {
         let obj_id = obj_entity_ref.get_id();
-
-        if let Some(cont_entity_id) = find_containable_entity_in_room(game_state, &cont_name) {
+        
+        // Find the container in the room or inventory
+        if let Some((_, cont_entity_id)) = find_containable_entity(game_state, &cont_name) {
+            // Check if it's the same
             if cont_entity_id == obj_id {
-                return format!("I cant put things into themselves, it would cause some kind of a paradox, I'm pretty sure. Good try, though!");
+                return "You can't put something into itself.".to_string();
             }
-            if let Some(container) = game_state.world.get_container_mut(cont_entity_id) {
+            
+            if let Some(container) = game_state.world.get_containable_mut(cont_entity_id) {
                 if container.can_contain(obj_id) {
                     game_state.inventory.retain(|&e| EntityId::Item(e) != obj_id);
-
+                    
                     if let Err(e) = container.put(obj_id) {
                         return e;
                     }
-
-                    return format!("You've put {}{} into {}{}.", article, obj_name, get_article(cont_name), cont_name);
+        
+                    return format!("You put {} into {}.", obj_name, cont_name);
                 } else {
-                    return format!("{} cannot contain {}.", cont_name, obj_name);
+                    return format!("The {} cannot contain {}.", cont_name, obj_name);
                 }
             } else {
                 return format!("{} is not a container.", cont_name);
             }
         } else {
-            if let Some(cont_entity_id) = find_containable_entity_in_inventory(game_state, &cont_name) {
-                if let Some(container) = game_state.world.get_container_mut(cont_entity_id) {
-                    if container.can_contain(obj_id) {
-                        game_state.inventory.retain(|&e| EntityId::Item(e) != obj_id);
-    
-                        if let Err(e) = container.put(obj_id) {
-                            return e;
-                        }
-    
-                        return format!("You've put {}{} into {}{}.", article, obj_name, get_article(cont_name), cont_name);
-                    } else {
-                        return format!("{} cannot contain {}.", cont_name, obj_name);
-                    }
-                } else {
-                    return format!("{} is not a container.", cont_name);
-                }
-            } else {
-                return format!("You can't find {} to put things into.", cont_name);
-            }
+            return format!("There's no {} to put things into.", cont_name);
         }
     } else {
         return format!("You don't have {}.", obj_name);
@@ -257,45 +244,49 @@ pub fn put_into(game_state: &mut GameState, obj_name: &str, cont_name: &str) -> 
 pub fn take_from_container(game_state: &mut GameState, item_name: &str, container_name: &str) -> String {
     let item_name = item_name.to_lowercase();
     let container_name = container_name.to_lowercase();
-
-    if let Some(container_id) = find_containable_entity_in_room(game_state, &container_name) {
-        let entity_names_and_ids: Vec<(EntityId, String)> = {
-            if let Some(container) = game_state.world.get_container(container_id) {
-                container.contains()
-                    .iter()
-                    .filter_map(|&id| {
-                        if let Some(entity) = game_state.world.entities.get(&id) {
-                            let name = entity.name().to_lowercase();
-                            let aliases = entity.aliases().iter().map(|a| a.to_lowercase()).collect::<Vec<String>>();
-                            if name == item_name || aliases.contains(&item_name) {
-                                return Some((id, name));
-                            }
-                        }
-                        None
-                    })
-                    .collect()
-            } else {
-                return format!("{} is not a container.", container_name);
-            }
+    
+    // Find the container in the room or inventory
+    if let Some((_, container_id)) = find_containable_entity(game_state, &container_name) {
+        // Get IDs of the entities inside
+        let contained_ids: Vec<EntityId> = if let Some(container) = game_state.world.get_containable(container_id) {
+            container.contains().to_vec()
+        } else {
+            return format!("{} is not a container.", container_name);
         };
 
-        if let Some(&(entity_id, _)) = entity_names_and_ids.first() {
-            if let Some(container) = game_state.world.get_container_mut(container_id) {
+        // Find the ID of the entity to take
+        let entity_id_to_take = contained_ids.iter().find(|&&id| {
+            if let Some(entity) = game_state.world.entities.get(&id) {
+                let name = entity.name().to_lowercase();
+                let aliases = entity.aliases().iter()
+                    .map(|alias| alias.to_lowercase())
+                    .collect::<Vec<String>>();
+                name == item_name || aliases.contains(&item_name)
+            } else {
+                false
+            }
+        }).copied();
+
+        // If the entity is found, attempt to take it from the container
+        if let Some(entity_id) = entity_id_to_take {
+            if let Some(container) = game_state.world.get_containable_mut(container_id) {
                 match container.remove(entity_id) {
                     Ok(_) => {
+                        // If an item, take into inventory
                         if let EntityId::Item(item_id) = entity_id {
                             game_state.inventory.push(item_id);
-                            format!("You take the {} from the {}.", item_name, container_name)
+                            return format!("You take {} from {}.", item_name, container_name);
                         } else {
+                            // If not an item, drop on the floor
                             if let Some(entities) = game_state.world.get_room_entities_mut(&game_state.current_room) {
                                 entities.push(entity_id);
-                                format!("You take the {} from the {}, but you can't place it into the inventory. It's on the floor now.", item_name, container_name)
+                                return format!("You take {} from {}, but it's not an item you can carry.", item_name, container_name);
                             } else {
-                                format!("Could not find the current room to return the entity.")
+                                return "Could not find the current room to return the entity.".to_string();
                             }
                         }
                     }
-                    Err(e) => e.to_string(),
+                    Err(e) => e,
                 }
             } else {
                 format!("{} is not a container.", container_name)
@@ -306,6 +297,166 @@ pub fn take_from_container(game_state: &mut GameState, item_name: &str, containe
     } else {
         format!("There is no {} here to take things from.", container_name)
     }
+}
+
+// pub fn put_into(game_state: &mut GameState, obj_name: &str, cont_name: &str) -> String {
+//     let obj_name = obj_name.to_lowercase();
+//     let article = get_article(&obj_name);
+
+//     if let Some(obj_entity_ref) = find_entity_in_inventory(game_state, &obj_name) {
+//         let obj_id = obj_entity_ref.get_id();
+
+//         if let Some(cont_entity_id) = find_containable_entity_in_room(game_state, &cont_name) {
+//             if cont_entity_id == obj_id {
+//                 return format!("I cant put things into themselves, it would cause some kind of a paradox, I'm pretty sure. Good try, though!");
+//             }
+//             if let Some(container) = game_state.world.get_containable_mut(cont_entity_id) {
+//                 if container.can_contain(obj_id) {
+//                     game_state.inventory.retain(|&e| EntityId::Item(e) != obj_id);
+
+//                     if let Err(e) = container.put(obj_id) {
+//                         return e;
+//                     }
+
+//                     return format!("You've put {}{} into {}{}.", article, obj_name, get_article(cont_name), cont_name);
+//                 } else {
+//                     return format!("{} cannot contain {}.", cont_name, obj_name);
+//                 }
+//             } else {
+//                 return format!("{} is not a container.", cont_name);
+//             }
+//         } else {
+//             if let Some(cont_entity_id) = find_containable_entity_in_inventory(game_state, &cont_name) {
+//                 if let Some(container) = game_state.world.get_containable_mut(cont_entity_id) {
+//                     if container.can_contain(obj_id) {
+//                         game_state.inventory.retain(|&e| EntityId::Item(e) != obj_id);
+    
+//                         if let Err(e) = container.put(obj_id) {
+//                             return e;
+//                         }
+    
+//                         return format!("You've put {}{} into {}{}.", article, obj_name, get_article(cont_name), cont_name);
+//                     } else {
+//                         return format!("{} cannot contain {}.", cont_name, obj_name);
+//                     }
+//                 } else {
+//                     return format!("{} is not a container.", cont_name);
+//                 }
+//             } else {
+//                 return format!("You can't find {} to put things into.", cont_name);
+//             }
+//         }
+//     } else {
+//         return format!("You don't have {}.", obj_name);
+//     }
+// }
+
+// pub fn take_from_container(game_state: &mut GameState, item_name: &str, container_name: &str) -> String {
+//     let item_name = item_name.to_lowercase();
+//     let container_name = container_name.to_lowercase();
+
+//     if let Some(container_id) = find_containable_entity_in_room(game_state, &container_name) {
+//         let entity_names_and_ids: Vec<(EntityId, String)> = {
+//             if let Some(container) = game_state.world.get_containable(container_id) {
+//                 container.contains()
+//                     .iter()
+//                     .filter_map(|&id| {
+//                         if let Some(entity) = game_state.world.entities.get(&id) {
+//                             let name = entity.name().to_lowercase();
+//                             let aliases = entity.aliases().iter().map(|a| a.to_lowercase()).collect::<Vec<String>>();
+//                             if name == item_name || aliases.contains(&item_name) {
+//                                 return Some((id, name));
+//                             }
+//                         }
+//                         None
+//                     })
+//                     .collect()
+//             } else {
+//                 return format!("{} is not a container.", container_name);
+//             }
+//         };
+
+//         if let Some(&(entity_id, _)) = entity_names_and_ids.first() {
+//             if let Some(container) = game_state.world.get_containable_mut(container_id) {
+//                 match container.remove(entity_id) {
+//                     Ok(_) => {
+//                         if let EntityId::Item(item_id) = entity_id {
+//                             game_state.inventory.push(item_id);
+//                             format!("You take the {} from the {}.", item_name, container_name)
+//                         } else {
+//                             if let Some(entities) = game_state.world.get_room_entities_mut(&game_state.current_room) {
+//                                 entities.push(entity_id);
+//                                 format!("You take the {} from the {}, but you can't place it into the inventory. It's on the floor now.", item_name, container_name)
+//                             } else {
+//                                 format!("Could not find the current room to return the entity.")
+//                             }
+//                         }
+//                     }
+//                     Err(e) => e.to_string(),
+//                 }
+//             } else {
+//                 format!("{} is not a container.", container_name)
+//             }
+//         } else {
+//             format!("The {} is not in the {}.", item_name, container_name)
+//         }
+//     } else {
+//         format!("There is no {} here to take things from.", container_name)
+//     }
+// }
+
+pub fn eat(game_state: &mut GameState, item_name: &str) -> String {
+    let item_name = item_name.to_lowercase();
+    let article = get_article(&item_name);
+    if let Some(food_entity_id) = find_food_in_inventory(game_state, &item_name) {
+        if let Some(food_item) = game_state.world.get_edible_mut(food_entity_id) {
+            match food_item.eat() {
+                Ok(_) => {
+                    // Remove from inventory
+                    if let EntityId::Item(item_id) = food_entity_id {
+                        game_state.inventory.retain(|&id| id != item_id);
+                        format!("You eat the {}. Yum!", item_name)
+                    } else {
+                        format!("You can't eat the {}.", item_name)
+                    }
+                },
+                Err(e) => e.to_string(),
+            }
+        } else {
+            format!("You can't eat the {}.", item_name)
+        }
+    } else {
+        format!("You don't have any {} to eat.", item_name)
+    }
+}
+
+pub fn read(game_state: &mut GameState, item_name: &str) -> String {
+    let item_name = item_name.to_lowercase();
+    let article = get_article(&item_name);
+    if let Some(food_entity_id) = find_readable_in_inventory(game_state, &item_name) {
+        if let Some(food_item) = game_state.world.get_edible_mut(food_entity_id) {
+            match food_item.eat() {
+                Ok(_) => {
+                    // Remove from inventory
+                    if let EntityId::Item(item_id) = food_entity_id {
+                        game_state.inventory.retain(|&id| id != item_id);
+                        format!("You eat the {}. Yum!", item_name)
+                    } else {
+                        format!("You can't eat the {}.", item_name)
+                    }
+                },
+                Err(e) => e.to_string(),
+            }
+        } else {
+            format!("There's nothing interesting written on the {}.", item_name)
+        }
+    } else {
+        format!("You don't see a {} to read.", item_name)
+    }
+}
+
+pub fn read (game_state: &mut GameState, item_name: &str) -> String {
+    todo!();
 }
 
 fn find_entity_in_room<'a>(game_state: &'a GameState, obj_name: &str) -> Option<&'a dyn Entity> {
@@ -352,6 +503,28 @@ fn find_entity_in_inventory<'a>(game_state: &'a GameState, obj_name: &str) -> Op
     None
 }
 
+fn find_containable_entity<'a>(game_state: &'a GameState, name: &str) -> Option<(&'a dyn Containable, EntityId)> {
+    let search_name = name.to_lowercase();
+
+    if let Some(entity_id) = find_containable_entity_in_room(game_state, &search_name) {
+        if let Some(entity) = game_state.world.entities.get(&entity_id) {
+            if let Some(containable) = entity.as_containable() {
+                return Some((containable, entity_id));
+            }
+        }
+    }
+
+    if let Some(entity_id) = find_containable_entity_in_inventory(game_state, &search_name) {
+        if let Some(entity) = game_state.world.entities.get(&entity_id) {
+            if let Some(containable) = entity.as_containable() {
+                return Some((containable, entity_id));
+            }
+        }
+    }
+
+    None
+}
+
 fn find_containable_entity_in_room(game_state: &GameState, cont_name: &str) -> Option<EntityId> {
     let search_name = cont_name.to_lowercase();
 
@@ -361,13 +534,21 @@ fn find_containable_entity_in_room(game_state: &GameState, cont_name: &str) -> O
                 eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
                 if entity.name().to_lowercase() == search_name {
                     if entity.as_containable().is_some() {
+                        eprintln!("It's containable!");
                         return Some(*entity_id);
+                    } else {
+                        eprintln!("It's not containable!");
                     }
                 }
                 for alt_name in entity.aliases() {
                     eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
                     if *alt_name == search_name {
-                        return Some(*entity_id);
+                        if entity.as_containable().is_some() {
+                            eprintln!("It's containable!");
+                            return Some(*entity_id);
+                        } else {
+                            eprintln!("It's not containable!");
+                        }
                     }
                 }
             }
@@ -392,6 +573,31 @@ fn find_containable_entity_in_inventory(game_state: &GameState, cont_name: &str)
                     eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
                     if *alt_name == search_name {
                         return Some(entity_id);
+                    }
+                }
+            }
+        }
+    None
+}
+
+fn find_food_in_inventory(game_state: &GameState, food_name: &str) -> Option<EntityId> {
+    let search_name = food_name.to_lowercase();
+
+    for item_id in &game_state.inventory {
+        let entity_id = EntityId::Item(*item_id);
+        if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
+            eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
+                if entity.name().to_lowercase() == search_name {
+                    if entity.as_edible().is_some() {
+                        return Some(entity_id);
+                    }
+                }
+                for alt_name in entity.aliases() {
+                    eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
+                    if *alt_name == search_name {
+                        if entity.as_edible().is_some() {
+                            return Some(entity_id);
+                        }
                     }
                 }
             }

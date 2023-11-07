@@ -21,6 +21,7 @@ pub enum Command {
     Pull(String),         // Pull something
     Turn(String),         // Turn something (like a knob or switch)
     Read(String),         // Read something (like a note)
+    Eat(String),          // Eat something that's a food
     
     // Communication
     // TalkTo(String),       // Talk to a character
@@ -62,6 +63,7 @@ pub fn parse(input: &str) -> Option<Command> {
         ["read", obj] => Some(Command::Read(obj.to_string())),
         // ["talk", "to", person] => Some(Command::TalkTo(person.to_string())),
         // ["give", obj, "to", person] => Some(Command::Give(obj.to_string(), person.to_string())),
+        ["eat", obj] | ["consume", obj]  => Some(Command::Eat(obj.to_string())),
 
         ["inventory"] | ["i"] => Some(Command::Inventory),
         ["status"] => Some(Command::Status),
@@ -78,4 +80,13 @@ pub fn parse(input: &str) -> Option<Command> {
         ["down"] | ["d"] | ["go", "down"] | ["go", "d"] => Some(Command::Go(Direction::Down)),
         _ => None,
     }
+}
+
+fn strip_articles_and_join(words: &[&str]) -> String {
+    let articles = ["the", "a", "an"];
+    words.iter()
+         .filter(|&word| !articles.contains(word))
+         .cloned()
+         .collect::<Vec<&str>>()
+         .join(" ")
 }

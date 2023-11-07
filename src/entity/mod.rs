@@ -5,7 +5,7 @@ use std::any::Any;
 
 
 use furniture::FurnId;
-use item::{ItemId, Containable};
+use item::{ItemId, Containable, Edible};
 use strum_macros::{EnumIter, Display};
 
 #[derive(EnumIter, Default, Debug, Display, PartialEq, Eq, Hash, Clone, Copy)]
@@ -23,7 +23,10 @@ pub trait Entity {
     fn description(&self) -> &str;
     fn as_any(&self) -> &dyn Any;
     fn as_any_mut(&mut self) -> &mut dyn Any;
-    fn as_containable(&self) -> Option<&dyn Containable>;
+    fn as_containable(&self) -> Option<&dyn Containable> { None }
+    fn as_containable_mut(&mut self) -> Option<&mut dyn Containable> { None }
+    fn as_edible(&self) -> Option<&dyn Edible> { None }
+    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> { None }
 }
 
 pub struct PassiveEntity {
@@ -65,9 +68,6 @@ macro_rules! impl_entity {
             fn as_any_mut(&mut self) -> &mut dyn Any {
                 self
             }
-            fn as_containable(&self) -> Option<&dyn crate::entity::Containable> {
-                None
-            }
         })*
     };
 }
@@ -100,6 +100,9 @@ macro_rules! impl_entity_containable {
                     self
                 }
                 fn as_containable(&self) -> Option<&dyn crate::entity::Containable> {
+                    Some(self)
+                }
+                fn as_containable_mut(&mut self) -> Option<&mut dyn crate::entity::Containable> {
                     Some(self)
                 }
             }

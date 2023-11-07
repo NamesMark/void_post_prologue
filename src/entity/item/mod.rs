@@ -42,7 +42,7 @@ pub enum Liquid {
     Air,
 }
 
-impl_entity!(Item, Food, Drink, TextItem, SecretBottle);
+impl_entity!(Item, Drink, TextItem, SecretBottle);
 impl_entity_containable!(Container);
 
 pub struct Item {
@@ -208,9 +208,39 @@ impl Food {
 
 impl Edible for Food {
     fn eat(&mut self) -> Result<(), &'static str> {
-        println!("You eat the {}.", self.name);
-
+        //println!("You eat the {}.", self.name);
         Ok(())
+    }
+}
+
+impl Entity for Food {
+    fn get_id(&self) -> EntityId {
+        self.id
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn aliases(&self) -> &Vec<String> {
+        &self.aliases
+    }
+
+    fn description(&self) -> &str {
+        &self.description
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+    fn as_edible(&self) -> Option<&dyn Edible> {
+        Some(self)
+    }
+    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> { 
+        Some(self)
     }
 }
 

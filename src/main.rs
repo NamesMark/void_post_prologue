@@ -70,6 +70,9 @@ fn process_input(game_state: &mut GameState, command: Option<Command>) {
         // Pull(String),         // Pull something
         // Turn(String),         // Turn something (like a knob or switch)
         // Read(String),         // Read something (like a note)
+        Some(Command::Read(obj)) => println!("{}", actions::read(game_state, &obj)),
+        // Eat(String),           // Eat something that's a food
+        Some(Command::Eat(obj)) => println!("{}", actions::eat(game_state, &obj)),
         
         // // Communication
         // // TalkTo(String),       // Talk to a character

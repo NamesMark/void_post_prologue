@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
 use crate::entity::furniture::{Furniture, FurnId, Sink, MainTerminal};
-use crate::entity::item::{Item, ItemId, Container, Food, Drink, TextItem, Size};
+use crate::entity::item::{Item, ItemId, Container, Food, Drink, TextItem, Size, Containable, Edible};
 use crate::entity::{Entity, EntityId, PassiveEntity};
 use crate::world::room::PassageType;
 
@@ -402,6 +402,20 @@ impl World {
                 "A robust and no-nonsense piece of furniture, the Bosun's Desk stands as a testament to practicality over aesthetics. The surface is littered with charts, navigational tools, and the occasional personal memento. Each drawer looks to be meticulously labeled, and the desk's well-worn edges suggest years of service and countless hours of diligent work.".to_string(),
                 vec![EntityId::Item(ItemId::BosunCard)],
             )),
+            FurnId::FuelTankA => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::FuelTankA),
+                "Fuel tank A".to_string(), 
+                vec!["tank".to_string(), "tank a".to_string(), "fuel tank".to_string()],
+                "".to_string(),
+                vec![],
+            )),
+            FurnId::FuelTankB => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::FuelTankB),
+                "Fuel tank B".to_string(), 
+                vec!["tank".to_string(), "tank b".to_string(), "fuel tank".to_string()],
+                "".to_string(),
+                vec![],
+            )),
 
 
             // other cases...
@@ -604,14 +618,23 @@ impl World {
         None 
     }
 
-    pub fn get_container(&self, entity_id: EntityId) -> Option<&Container> {
-        self.entities.get(&entity_id).and_then(|entity| {
-            entity.as_any().downcast_ref::<Container>()
-        })
+    pub fn get_containable(&self, entity_id: EntityId) -> Option<&dyn Containable> {
+        self.entities.get(&entity_id)
+            .and_then(|entity| entity.as_containable())
     }
-    pub fn get_container_mut(&mut self, entity_id: EntityId) -> Option<&mut Container> {
-        self.entities.get_mut(&entity_id).and_then(|entity| {
-            entity.as_any_mut().downcast_mut::<Container>()
-        })
+
+    pub fn get_containable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Containable> {
+        self.entities.get_mut(&entity_id)
+            .and_then(|entity| entity.as_containable_mut())
+    }
+
+    pub fn get_edible(&self, entity_id: EntityId) -> Option<&dyn Edible> {
+        self.entities.get(&entity_id)
+            .and_then(|entity| entity.as_edible())
+    }
+
+    pub fn get_edible_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Edible> {
+        self.entities.get_mut(&entity_id)
+            .and_then(|entity| entity.as_edible_mut())
     }
 }
