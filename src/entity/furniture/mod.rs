@@ -1,3 +1,6 @@
+mod main_terminal;
+mod sink;
+
 use strum_macros::EnumIter;
 use std::any::Any;
 use super::{Entity, EntityId};
@@ -26,7 +29,6 @@ pub enum FurnId {
     Dust
 }
 
-impl_entity!(Sink, MainTerminal);
 impl_entity_containable!(Furniture);
 
 pub struct Furniture {
@@ -66,44 +68,4 @@ impl Containable for Furniture {
     fn contains(&self) -> &Vec<EntityId> {
         &self.contains
     }
-}
-
-pub struct Sink {
-    id: EntityId,
-    name: String,
-    aliases: Vec<String>,
-    description: String,
-    contains: Vec<EntityId>, 
-    tap_is_on: bool,
-}
-
-impl Sink {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
-        Sink { id, name, aliases, description, contains, tap_is_on: false }
-    }
-}
-
-pub struct MainTerminal {
-    id: EntityId,
-    name: String,
-    aliases: Vec<String>,
-    description: String,
-    contains: Vec<EntityId>, 
-}
-
-impl MainTerminal {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
-        MainTerminal { id, name, aliases, description, contains}
-    }
-
-    pub fn enter_command() {
-        todo!()
-    }
-}
-
-enum MainTerminalCommand {
-    ActivateMainEngines,
-    ActivateManeurEngines,
-    SwitchToFuelTankB,
-
 }

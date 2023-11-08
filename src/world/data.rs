@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
 use crate::entity::furniture::{Furniture, FurnId, Sink, MainTerminal};
-use crate::entity::item::{Item, ItemId, Container, Food, Drink, TextItem, Size, Containable, Edible};
+use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible};
+use crate::entity::item::container::Container;
+use crate::entity::item::text_item::TextItem;
+use crate::entity::item::food::Food;
 use crate::entity::{Entity, EntityId, PassiveEntity};
 use crate::world::room::PassageType;
 

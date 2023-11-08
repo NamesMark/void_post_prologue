@@ -2,8 +2,6 @@ pub mod item;
 pub mod furniture;
 
 use std::any::Any;
-
-
 use furniture::FurnId;
 use item::{ItemId, Containable, Edible};
 use strum_macros::{EnumIter, Display};
