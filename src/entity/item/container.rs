@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use super::{Entity, EntityId, Item, ItemId};
 use super::Size;
 use super::Containable;

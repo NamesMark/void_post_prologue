@@ -1,8 +1,9 @@
-mod main_terminal;
-mod sink;
+pub mod main_terminal;
+pub mod sink;
 
-use strum_macros::EnumIter;
 use std::any::Any;
+use strum_macros::EnumIter;
+
 use super::{Entity, EntityId};
 use super::item::{ItemId, Containable};
 use crate::{impl_entity, impl_entity_containable};

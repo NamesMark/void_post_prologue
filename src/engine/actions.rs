@@ -433,17 +433,11 @@ pub fn eat(game_state: &mut GameState, item_name: &str) -> String {
 pub fn read(game_state: &mut GameState, item_name: &str) -> String {
     let item_name = item_name.to_lowercase();
     let article = get_article(&item_name);
-    if let Some(food_entity_id) = find_readable_in_inventory(game_state, &item_name) {
-        if let Some(food_item) = game_state.world.get_edible_mut(food_entity_id) {
-            match food_item.eat() {
-                Ok(_) => {
-                    // Remove from inventory
-                    if let EntityId::Item(item_id) = food_entity_id {
-                        game_state.inventory.retain(|&id| id != item_id);
-                        format!("You eat the {}. Yum!", item_name)
-                    } else {
-                        format!("You can't eat the {}.", item_name)
-                    }
+    if let Some(readable_entity_id) = find_readable_in_inventory(game_state, &item_name) {
+        if let Some(readable_item) = game_state.world.get_readable_mut(readable_entity_id) {
+            match readable_item.read() {
+                Ok(contents) => {
+                    format!("You read the {}: {}", item_name, contents)
                 },
                 Err(e) => e.to_string(),
             }
@@ -453,10 +447,6 @@ pub fn read(game_state: &mut GameState, item_name: &str) -> String {
     } else {
         format!("You don't see a {} to read.", item_name)
     }
-}
-
-pub fn read (game_state: &mut GameState, item_name: &str) -> String {
-    todo!();
 }
 
 fn find_entity_in_room<'a>(game_state: &'a GameState, obj_name: &str) -> Option<&'a dyn Entity> {
@@ -596,6 +586,31 @@ fn find_food_in_inventory(game_state: &GameState, food_name: &str) -> Option<Ent
                     eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
                     if *alt_name == search_name {
                         if entity.as_edible().is_some() {
+                            return Some(entity_id);
+                        }
+                    }
+                }
+            }
+        }
+    None
+}
+
+fn find_readable_in_inventory(game_state: &GameState, readable_name: &str) -> Option<EntityId> {
+    let search_name = readable_name.to_lowercase();
+
+    for item_id in &game_state.inventory {
+        let entity_id = EntityId::Item(*item_id);
+        if let Some(entity) = game_state.world.entities.get(&EntityId::Item(*item_id)) {
+            eprintln!("DEBUG: Comparing: '{}' with '{}'", entity.name().to_lowercase(), search_name);
+                if entity.name().to_lowercase() == search_name {
+                    if entity.as_readable().is_some() {
+                        return Some(entity_id);
+                    }
+                }
+                for alt_name in entity.aliases() {
+                    eprintln!("DEBUG: Comparing: '{}' with '{}'", alt_name, search_name);
+                    if *alt_name == search_name {
+                        if entity.as_readable().is_some() {
                             return Some(entity_id);
                         }
                     }

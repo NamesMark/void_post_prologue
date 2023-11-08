@@ -14,12 +14,16 @@ pub enum ItemId {
     WaterBottle,
     EmptyBottle,
     SecretBottle,
-    CounterNote,
     Biscuits,
     Plate,
     FoodSurrogateBottle,
     Fork,
     LuckyCoin,
+    
+
+    
+    CounterNote,
+    ShuttleManual,
     
     
     AssistantCard,
@@ -229,5 +233,9 @@ pub trait Drinkable {
     fn drink(&mut self) -> Result<(), &'static str>;
 }
 pub trait Readable {
-    fn read(&mut self) -> Result<(), &'static str>;
+    fn read(&mut self) -> Result<&String, &'static str>;
+}
+
+pub trait Usable {
+    fn r#use(&mut self) -> Result<&String, &'static str>;
 }

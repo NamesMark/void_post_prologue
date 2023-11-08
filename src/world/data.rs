@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
-use crate::entity::furniture::{Furniture, FurnId, Sink, MainTerminal};
-use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible};
+use crate::entity::furniture::{Furniture, FurnId};
+use crate::entity::furniture::main_terminal::MainTerminal;
+use crate::entity::furniture::sink::Sink;
+use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible, Readable};
 use crate::entity::item::container::Container;
 use crate::entity::item::text_item::TextItem;
 use crate::entity::item::food::Food;
@@ -639,5 +641,15 @@ impl World {
     pub fn get_edible_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Edible> {
         self.entities.get_mut(&entity_id)
             .and_then(|entity| entity.as_edible_mut())
+    }
+
+    pub fn get_readable(&self, entity_id: EntityId) -> Option<&dyn Readable> {
+        self.entities.get(&entity_id)
+            .and_then(|entity| entity.as_readable())
+    }
+
+    pub fn get_readable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Readable> {
+        self.entities.get_mut(&entity_id)
+            .and_then(|entity| entity.as_readable_mut())
     }
 }

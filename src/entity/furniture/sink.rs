@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use crate::{impl_entity, impl_entity_containable};
 use super::{Entity, EntityId};
 use crate::entity::item::{ItemId, Containable};

@@ -1,9 +1,9 @@
+use std::any::Any;
+
 use super::{Entity, EntityId, Item, ItemId};
 use super::Size;
 use super::Readable;
 use crate::{impl_entity};
-
-impl_entity!(TextItem);
 
 pub struct TextItem {
     id: EntityId,
@@ -20,10 +20,40 @@ impl TextItem {
 }
 
 impl Readable for TextItem {
-    fn read(&mut self) -> Result<(), &'static str> {
-        println!("You read the {}:", self.name);
-        println!("{}", self.contents);
+    fn read(&mut self) -> Result<&String, &'static str> {
+        // println!("You read the {}:", self.name);
+        // println!("{}", self.contents);
+        Ok((&self.contents))
+    }
+}
 
-        Ok(())
+impl Entity for TextItem {
+    fn get_id(&self) -> EntityId {
+        self.id
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn aliases(&self) -> &Vec<String> {
+        &self.aliases
+    }
+
+    fn description(&self) -> &str {
+        &self.description
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+    fn as_readable(&self) -> Option<&dyn Readable> {
+        Some(self)
+    }
+    fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> { 
+        Some(self)
     }
 }
