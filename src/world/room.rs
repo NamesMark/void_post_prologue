@@ -22,7 +22,9 @@ pub enum RoomIdentifier {
     BosunsRoom,
     CaptainsRoom,
     StorageHold,
-    CrewCabins
+    CrewCabins,
+
+    StationAirlock
 }
 
 #[derive(Display, PartialEq, Clone, Copy)]

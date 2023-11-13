@@ -13,10 +13,10 @@ Dive into "Void Post 39: Prologue," a text-based adventure that will challenge y
 - ✅ Interaction with containers
 - ✅ Food
 - ✅ Lose condition
-- ❌ Win condition
+- ✅ Win condition
 - Multiple ways to progress:
-    - ❌ Multiple lose conditions
-    - ❌ Multiple win conditions
+    - ✅ Multiple lose conditions
+    - ✅ Multiple win conditions
 - ❌ Fully built action system
 - ❌ Improved parser
 - ❌ A variety of puzzles

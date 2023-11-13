@@ -65,6 +65,9 @@ fn process_input(game_state: &mut GameState, command: Option<Command>) {
         //PutInto(String, String), // Put into a container
         Some(Command::PutInto(obj, cont)) => println!("{}", actions::put_into(game_state, &obj, &cont)),
         // Use(String),          // Use an object
+        Some(Command::Use(obj)) => println!("{}", actions::r#use(game_state, &obj)),
+        // Enter(String)         // Enter a command
+        Some(Command::Enter(command)) => println!("{}", actions::enter(game_state, &command)),
         // Combine(String, String), // Combine two items
         // Push(String),         // Push something
         // Pull(String),         // Pull something

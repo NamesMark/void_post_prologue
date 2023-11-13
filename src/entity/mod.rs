@@ -3,7 +3,7 @@ pub mod furniture;
 
 use std::any::Any;
 use furniture::FurnId;
-use item::{ItemId, Containable, Edible, Readable};
+use item::{ItemId, Containable, Edible, Readable, Usable};
 use strum_macros::{EnumIter, Display};
 
 #[derive(EnumIter, Default, Debug, Display, PartialEq, Eq, Hash, Clone, Copy)]
@@ -27,6 +27,8 @@ pub trait Entity {
     fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> { None }
     fn as_readable(&self) -> Option<&dyn Readable> { None }
     fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> { None }
+    fn as_usable(&self) -> Option<&dyn Usable> { None }
+    fn as_usable_mut(&mut self) -> Option<&mut dyn Usable> { None }
 }
 
 pub struct PassiveEntity {

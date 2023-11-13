@@ -8,7 +8,7 @@ pub enum Command {
     Close(String),        // Close something
 
     Go(Direction),        // Move in a direction
-    Enter(String),        // Enter something
+    //Enter(String),        // Enter something
     
     // Interaction
     Take(String),         // Take an object
@@ -16,6 +16,7 @@ pub enum Command {
     TakeFrom(String, String), // Take from a container
     PutInto(String, String), // Put into a container
     Use(String),          // Use an object
+    Enter(String),         // Enter a command
     Combine(String, String), // Combine two items
     Push(String),         // Push something
     Pull(String),         // Pull something
@@ -56,6 +57,7 @@ pub fn parse(input: &str) -> Option<Command> {
 
         ["drop", obj] => Some(Command::Drop(obj.to_string())),
         ["use", obj] => Some(Command::Use(obj.to_string())),
+        ["enter", command] => Some(Command::Enter(command.to_string())),
         //["combine", obj1, "with", obj2] => Some(Command::Combine(obj1.to_string(), obj2.to_string())),
         //["push", obj] => Some(Command::Push(obj.to_string())),
         //["pull", obj] => Some(Command::Pull(obj.to_string())),

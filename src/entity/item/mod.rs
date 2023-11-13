@@ -237,5 +237,5 @@ pub trait Readable {
 }
 
 pub trait Usable {
-    fn r#use(&mut self) -> Result<&String, &'static str>;
+    fn r#use(&mut self) -> Result<String, &'static str>;
 }

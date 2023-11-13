@@ -2,8 +2,9 @@ use std::collections::HashMap;
 use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
 use crate::entity::furniture::{Furniture, FurnId};
 use crate::entity::furniture::main_terminal::MainTerminal;
+use crate::entity::furniture::navigation_computer::NavigationComputer;
 use crate::entity::furniture::sink::Sink;
-use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible, Readable};
+use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible, Readable, Usable};
 use crate::entity::item::container::Container;
 use crate::entity::item::text_item::TextItem;
 use crate::entity::item::food::Food;
@@ -86,7 +87,7 @@ impl World {
                 access: Access::D,
                 short_description: "Crew Cabins Corridor".to_string(),
                 full_description: "A narrow hallway lined with personal quarters extends before you. The lighting is dim, flickering slightly, adding to the air of weary privacy that pervades this space.".to_string(),
-                first_thoughts: "You wonder how many people called this place home? Has the same crew operated this vessel from the beginning, or did many generations change? There are probably countless stories and memories embedded in these walls, which you probably won't ever know.".to_string(),
+                first_thoughts: "You wonder how many people called this place home? Has the same crew operated this vessel from the beginning, or did many generations change? There are probably countless stories and memories embedded in these walls, which you probably won't ever know.\nOn a more pressing issue, it would seem that the shuttle is completely empty. You guess that your main task should be to try to off the shuttle and reach the space outpost nearby. How would you do that?".to_string(),
                 entities: vec![
                 ],
                 connected_rooms: vec![
@@ -108,6 +109,24 @@ impl World {
                 ],
                 connected_rooms: vec![
                     (Direction::South, PassageType::Door, RoomIdentifier::CrewCabins)
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::CaptainsRoom, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::CaptainsRoom,
+                visited: false,
+                access: Access::B,
+                short_description: "Captain's Quarters".to_string(),
+                full_description: "Even though the room is a bit shabby for a captain, it still exudes a sense of quiet authority. There's a desk with a personal terminal, bookshelves, a neatly made bed, and a regular illuminator that nonetheless offers a breathtaking view of the stars. This is a sanctuary, a place for leadership, and introspection... with a help of a cheap AstraKefali brendi.".to_string(),
+                first_thoughts: "Oh, a captain's room, cool! I'm sure there's something to steal here, he-he.".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::BookShelves),
+                    EntityId::Furniture(FurnId::CaptainsDesk),
+                    EntityId::Furniture(FurnId::CaptainsIlluminator),
+                ],
+                connected_rooms: vec![
+                    (Direction::East, PassageType::Door, RoomIdentifier::MeetingRoom)
                 ],
             }
         );
@@ -136,7 +155,7 @@ impl World {
                 access: Access::D,
                 short_description: "This is a tight corridor.".to_string(),
                 full_description: "This is a corridor that is used to enter and exit this vessel. It has two airlocks on the opposite ends of it.".to_string(),
-                first_thoughts: "It feels kinda... fresh in here?".to_string(),
+                first_thoughts: "It feels kinda... fresh in here? Although I start to wonder where is everyone.".to_string(),
                 entities: vec![
                 ],
                 connected_rooms: vec![
@@ -144,6 +163,23 @@ impl World {
                     (Direction::West, PassageType::Door, RoomIdentifier::AirlockA),
                     (Direction::East, PassageType::Door, RoomIdentifier::AirlockB),
                     (Direction::Down, PassageType::Door, RoomIdentifier::TechCorridor),
+                    (Direction::South, PassageType::Door, RoomIdentifier::StorageHold),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::StorageHold, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::StorageHold,
+                visited: false,
+                access: Access::A,
+                short_description: "Spacious room filled with shelves with various crates, boxes and barrels. There's an emergency locker in the corner.".to_string(),
+                full_description: "This is a corridor that is used to enter and exit this vessel. It has two airlocks on the opposite ends of it.".to_string(),
+                first_thoughts: "It feels kinda... fresh in here?".to_string(),
+                entities: vec![
+                    EntityId::Furniture(FurnId::EmergencyLocker),
+                ],
+                connected_rooms: vec![
+                    (Direction::North, PassageType::Door, RoomIdentifier::AirlockCorridor),
                 ],
             }
         );
@@ -170,12 +206,26 @@ impl World {
                 visited: false,
                 access: Access::D,
                 short_description: "".to_string(),
-                full_description: "".to_string(),
-                first_thoughts: "".to_string(),
+                full_description: "You don't feel or hear anything except for your breath and the warm condensation on the space suit's mask.".to_string(),
+                first_thoughts: "You tuck your legs and then straighten them with force to push yourself away from the shuttle. The station is so near. Just a few seconds of floating and you'll get there...".to_string(),
                 entities: vec![
                 ],
                 connected_rooms: vec![
-                    (Direction::East, PassageType::Door, RoomIdentifier::AirlockA),
+                    (Direction::West, PassageType::Free, RoomIdentifier::StationAirlock),
+                ],
+            }
+        );
+        rooms.insert(RoomIdentifier::StationAirlock, 
+            RoomAttributes {
+                room_identifier: RoomIdentifier::StationAirlock,
+                visited: false,
+                access: Access::D,
+                short_description: "This is the Void Post 39 airlock.".to_string(),
+                full_description: "The airlock of the station stands before you, a circular door etched with the scars of space travel - micrometeorite impacts and the wear of countless entries and exits. Inside, you can see the faint glow of emergency lighting, offering a warm contrast to the cold, unfeeling vacuum outside. The airlock promises a return to a semblance of normalcy, a brief respite from the endless expanse outside.".to_string(),
+                first_thoughts: "As you approach the station's airlock, a wave of relief washes over you. The mechanical hiss of the airlock operating breaks the silence, grounding you back in a world where sound exists. 'You are finally here,' you think to yourself, as the doors begin to open, welcoming you into the station's embrace. The thought of safety, warmth, and perhaps answers to the myriad questions swirling in your head fills you with renewed purpose.".to_string(),
+                entities: vec![
+                ],
+                connected_rooms: vec![
                 ],
             }
         );
@@ -280,13 +330,15 @@ impl World {
                 visited: false,
                 access: Access::B,
                 short_description: "Meeting room".to_string(),
-                full_description: "".to_string(),
-                first_thoughts: "".to_string(),
+                full_description: "The walls of this compact room are lined with a few outdated screens and control panels. It's designed for quick, efficient meetings. There's no furniture due to the lack of space.".to_string(),
+                first_thoughts: "Ah, a meeting and navigation room. Looks like shuttles like this don't have any space on the bridge to accomodate this functionality. There's certainly something useful here to get me out and on the outpost.".to_string(),
                 entities: vec![
+                    EntityId::Furniture(FurnId::NavigationComputer),
                 ],
                 connected_rooms: vec![
                     (Direction::North, PassageType::Door, RoomIdentifier::Bridge),
-                    (Direction::South, PassageType::Door, RoomIdentifier::NorthMess)
+                    (Direction::South, PassageType::Door, RoomIdentifier::NorthMess),
+                    (Direction::West, PassageType::Door, RoomIdentifier::CaptainsRoom),
                 ],
             }
         );
@@ -387,6 +439,13 @@ impl World {
                 "This is the main terminal of the shuttle. The message on the display says: \"There was a problem with your payment. Your subscription to the ShuttleControlOS has been suspended. Please top up your account to regain control of the {$$shuttle_name$$}.\"".to_string(),
                 vec![],
             )),
+            FurnId::NavigationComputer => Box::new(NavigationComputer::new(
+                EntityId::Furniture(FurnId::NavigationComputer),
+                "Navigation computer".to_string(),
+                vec!["terminal".to_string(), "computer".to_string()],
+                "This simple terminal blinks at you with a multitude of colorful lights as if in a friendly jest. From the flickering start charts and trajectory data, it is obvious that it's used to plot the routes of deep-space travel, as well as calculate the approach trajectories to dock various stations and spaceships, which is the primary use of a shuttle. The interface looks quite user-friendly, you are sure you'd be able to operate it.".to_string(),
+                vec![],
+            )),
             FurnId::WarningSign => Box::new(PassiveEntity::new(
                 EntityId::Furniture(FurnId::WarningSign),
                 "Warning sign".to_string(), 
@@ -407,19 +466,47 @@ impl World {
                 "A robust and no-nonsense piece of furniture, the Bosun's Desk stands as a testament to practicality over aesthetics. The surface is littered with charts, navigational tools, and the occasional personal memento. Each drawer looks to be meticulously labeled, and the desk's well-worn edges suggest years of service and countless hours of diligent work.".to_string(),
                 vec![EntityId::Item(ItemId::BosunCard)],
             )),
+            FurnId::BookShelves => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::BookShelves),
+                "Bookshelves".to_string(),
+                vec!["shelves".to_string(), "book shelves".to_string()],
+                "In almost any captain's room you'd expect to see a bookshelf that's collection of knowledge and memories, filled with volumes of space navigation, astrophysics, and historical logs. Alas, this one contains mostly works of fiction and lewd love stories, with a scattering of random old, dusty technical manuals. (you'd be surprised if the captain actually read any of the dusty stuff). An... interesting choice of literature. Offers an insight into the captain's personal life, and it looks like he couldn't care less about what anyone would think.".to_string(),
+                vec![EntityId::Item(ItemId::ShuttleManual)],
+            )),
+            FurnId::CaptainsIlluminator => Box::new(PassiveEntity::new(
+                EntityId::Furniture(FurnId::CaptainsIlluminator),
+                "Illuminator".to_string(), 
+                vec!["window".to_string()],
+                r#"You are stunned by the breathtaking view of the stars. There's nothing else visible from this illuminator, only the infinite vastness of the universe."#.to_string()
+            )),
+            FurnId::CaptainsDesk => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::CaptainsDesk),
+                "Captain's desk".to_string(), 
+                vec!["desk".to_string(), "captain desk".to_string(), "captain's desk".to_string()],
+                "What used to be an elegant, yet functional desk for the most important person in the shuttle, now seems quite ordinary and unimportant. Maybe it would feel different with an actual captain behind it.".to_string(),
+                vec![EntityId::Item(ItemId::CaptainCard)],
+            )),
+
             FurnId::FuelTankA => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::FuelTankA),
                 "Fuel tank A".to_string(), 
                 vec!["tank".to_string(), "tank a".to_string(), "fuel tank".to_string()],
-                "".to_string(),
+                "The screen says 'Active Tank. Low fuel. Please contact the Gerbertt support team in case you experience problems switching to the reserve tank.'.".to_string(),
                 vec![],
             )),
             FurnId::FuelTankB => Box::new(Furniture::new(
                 EntityId::Furniture(FurnId::FuelTankB),
                 "Fuel tank B".to_string(), 
                 vec!["tank".to_string(), "tank b".to_string(), "fuel tank".to_string()],
-                "".to_string(),
+                "The screen says 'Inactive. Full.".to_string(),
                 vec![],
+            )),
+            FurnId::EmergencyLocker => Box::new(Furniture::new(
+                EntityId::Furniture(FurnId::EmergencyLocker),
+                "Emergency locker".to_string(), 
+                vec!["locker".to_string()],
+                "The plaque here says 'Use in case of emergencies. Don't forget to help yourself first before helping your crewmate!'".to_string(),
+                vec![EntityId::Item(ItemId::SpaceSuit)],
             )),
 
 
@@ -579,6 +666,7 @@ impl World {
 
 
 
+
             // other cases...
 
 
@@ -681,5 +769,10 @@ impl World {
     pub fn get_readable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Readable> {
         self.entities.get_mut(&entity_id)
             .and_then(|entity| entity.as_readable_mut())
+    }
+
+    pub fn get_usable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Usable> {
+        self.entities.get_mut(&entity_id)
+            .and_then(|entity| entity.as_usable_mut())
     }
 }

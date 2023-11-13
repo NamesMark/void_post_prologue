@@ -1,4 +1,5 @@
 pub mod main_terminal;
+pub mod navigation_computer;
 pub mod sink;
 
 use std::any::Any;
@@ -17,13 +18,18 @@ pub enum FurnId {
     CoffeeMachine,
     FoodPrinter,
     Sink,
-    MainTerminal,
     BosunDesk,
+    BookShelves,
+    CaptainsIlluminator,
+    CaptainsDesk,
+    
+    NavigationComputer,
+    MainTerminal,
 
     MainEngine,
     FuelTankA,
     FuelTankB,
-
+    EmergencyLocker,
 
     WarningSign,
     #[default]

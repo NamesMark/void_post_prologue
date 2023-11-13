@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use crate::entity::{Entity, EntityId};
 use crate::entity::item::{ItemId};
 use crate::world::room::{RoomIdentifier, Access};
+use crate::entity::furniture::main_terminal::MainTerminalCommand;
 use crate::world::data::World;
+use crate::engine::shuttle::ShuttleState;
 
 use strum::IntoEnumIterator;
 
@@ -11,7 +13,8 @@ pub struct GameState {
     pub current_room: RoomIdentifier,
     pub room_states: HashMap<RoomIdentifier, RoomState>,
     pub world: World,                  
-    pub inventory: Vec<ItemId>
+    pub inventory: Vec<ItemId>,
+    shuttle_state: ShuttleState,
 }
 
 pub struct RoomState {
@@ -36,7 +39,8 @@ impl GameState {
             current_room: starting_room,
             room_states,
             world,
-            inventory
+            inventory,
+            shuttle_state: ShuttleState::new(),
         }
     }
 
@@ -52,6 +56,13 @@ impl GameState {
 
     pub fn current_room_entities(&self) -> Option<&Vec<EntityId>> {
         self.world.get_room_entities(&self.current_room)
+    }
+
+    pub fn enter_shuttle_command(&mut self, command: &str) -> Result<String, String> {
+        match MainTerminalCommand::from_string(command) {
+            Ok(parsed_command) => self.shuttle_state.handle_command(parsed_command),
+            Err(e) => Err(e.to_string()),
+        }
     }
     
 }
