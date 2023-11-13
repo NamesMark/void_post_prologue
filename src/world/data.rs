@@ -636,7 +636,7 @@ impl World {
                 "Shuttle manual".to_string(),
                 vec!["manual".to_string(),],
                 "A paperback instructional book. The cover is damaged, but you can discern 'XM-86 shuttle user manual'".to_string(),
-                "Page 86... Maint terminal... Manual override commands... \n
+                "Page 86... Main terminal... Manual override commands... \n
                     ...\n
                     01. Main thrust engine commands:\n
                     - 01::00::00 main engine shut down \n
@@ -648,7 +648,6 @@ impl World {
                     02. Maneur engine commands:\n
                     - 02::02::00::XXX specify x vector (0-360)\n
                     - 02::02::01::YYY specify y vector (0-360)\n
-                    - 02::02::02::ZZZ specify z vector (0-360)\n
                     - 02::04::00 maneur engine thrust on\n
                     - 02::04::01 maneur engine thrust off\n
                     - 02::05::<power> specify maneur thrust power from 0 to 7\n
