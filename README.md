@@ -18,6 +18,8 @@ Dive into "Void Post 39: Prologue," a text-based adventure that will challenge y
     - ❌ Multiple lose conditions
     - ❌ Multiple win conditions
 - ❌ Fully built action system
+- ❌ Improved parser
+- ❌ A variety of puzzles
 - ❌ Easter egg actions
 - ❌ Engaging and developed story 
 - ❌ Reactive environment
