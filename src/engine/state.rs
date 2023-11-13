@@ -36,7 +36,7 @@ impl GameState {
 
         let inventory = vec![
                 ItemId::AssistantCard,
-                ItemId::CaptainCard, // for Debugging
+                //ItemId::CaptainCard, // for Debugging
             ];
 
         GameState {
