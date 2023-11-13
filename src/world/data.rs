@@ -645,13 +645,13 @@ impl World {
                     - 01::04::01 main engine thrust off\n
                     - 01::05::<power> specify thruster power level from 0 to 63\n
                     - 01::09::00 main engine status\n
-                    02. Maneur engine commands:\n
+                    02. Maneuvre engine commands:\n
                     - 02::02::00::XXX specify x vector (0-360)\n
                     - 02::02::01::YYY specify y vector (0-360)\n
-                    - 02::04::00 maneur engine thrust on\n
-                    - 02::04::01 maneur engine thrust off\n
-                    - 02::05::<power> specify maneur thrust power from 0 to 7\n
-                    - 02::09::00 maneur engine status\n
+                    - 02::04::00 maneuvre engine thrust on\n
+                    - 02::04::01 maneuvre engine thrust off\n
+                    - 02::05::<power> specify maneuvre thrust power from 0 to 7\n
+                    - 02::09::00 maneuvre engine status\n
                     07. Fuel system commands:\n
                     - 07::00::00 turn the fuel pump off\n
                     - 07::00::01 turn the fuel pump on\n
