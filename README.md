@@ -4,13 +4,32 @@ You wake up on the steel floor. If you laid there any longer, you'd probably get
 
 Dive into "Void Post 39: Prologue," a text-based adventure that will challenge your wits, decision-making, and sense of direction in the vastness of the unknown.
 
-## Features
-- Extensive action system (I dare you to find all expected and unexpected behaviors!)
-- Engaging story
-- Reactive environment
-- Multiple ways to progress
+## Roadmap
+- ✅ Basic story
+- ✅ Movement
+- ✅ Path blockers (access levels)
+- ✅ Examining, reading
+- ✅ Picking up
+- ✅ Interaction with containers
+- ✅ Food
+- ✅ Lose condition
+- ❌ Win condition
+- Multiple ways to progress:
+    - ❌ Multiple lose conditions
+    - ❌ Multiple win conditions
+- ❌ Fully built action system
+- ❌ Easter egg actions
+- ❌ Engaging and developed story 
+- ❌ Reactive environment
+
+### UI
+- ✅ Basic CLI
+- ❌ Colors and styles
+- ❌ Text animation
+- ❌ ASCII illustration(s)
+
 
 ## Technicalities
 
 - Written in Rust
-- Made to enjoy in console or in browser
+- Made to enjoy in console (✅) or in browser (❌)

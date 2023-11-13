@@ -544,7 +544,37 @@ impl World {
                 "A typical space suit to be safe on short space walks.".to_string(),
                 Size::Medium,
             )),
+            ItemId::ShuttleManual => Box::new(TextItem::new(
+                EntityId::Item(ItemId::ShuttleManual),
+                "Shuttle manual".to_string(),
+                vec!["manual".to_string(),],
+                "A paperback instructional book. The cover is damaged, but you can discern 'XM-86 shuttle user manual'".to_string(),
+                "Page 86... Maint terminal... Manual override commands... \n
+                    ...\n
+                    01. Main thrust engine commands:\n
+                    - 01::00::00 main engine shut down \n
+                    - 01::00::01 main engine start \n
+                    - 01::04::00 main engine thrust on\n
+                    - 01::04::01 main engine thrust off\n
+                    - 01::05::<power> specify thruster power level from 0 to 63\n
+                    - 01::09::00 main engine status\n
+                    02. Maneur engine commands:\n
+                    - 02::02::00::XXX specify x vector (0-360)\n
+                    - 02::02::01::YYY specify y vector (0-360)\n
+                    - 02::02::02::ZZZ specify z vector (0-360)\n
+                    - 02::04::00 maneur engine thrust on\n
+                    - 02::04::01 maneur engine thrust off\n
+                    - 02::05::<power> specify maneur thrust power from 0 to 7\n
+                    - 02::09::00 maneur engine status\n
+                    07. Fuel system commands:\n
+                    - 07::00::00 turn the fuel pump off\n
+                    - 07::00::01 turn the fuel pump on\n
+                    - 07::01::00 switch to fuel tank A\n
+                    - 07::01::01 switch to fuel tank A\n
+                    - 07::09::00 fuel system status
 
+                ".to_string()
+            )),
 
 
 
