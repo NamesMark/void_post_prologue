@@ -657,7 +657,7 @@ impl World {
                     - 07::00::00 turn the fuel pump off\n
                     - 07::00::01 turn the fuel pump on\n
                     - 07::01::00 switch to fuel tank A\n
-                    - 07::01::01 switch to fuel tank A\n
+                    - 07::01::01 switch to fuel tank B\n
                     - 07::09::00 fuel system status
 
                 ".to_string()

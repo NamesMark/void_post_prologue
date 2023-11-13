@@ -24,6 +24,10 @@ fn main() {
     println!("{}", game_state.current_room_description());
     
     loop {
+        if game_state.lost {
+            std::process::exit(0);
+        }
+
         // Get input from the player
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();

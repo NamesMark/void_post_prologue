@@ -1,4 +1,5 @@
 use crate::entity::furniture::main_terminal::MainTerminalCommand;
+use crate::GameState;
 
 pub struct ShuttleState {
     main_engine_on: bool,
@@ -72,19 +73,15 @@ impl ShuttleState {
     fn activate_main_thrust(&mut self) -> Result<String, String> {
         if self.main_engine_on && self.main_engine_power > 0 {
             if self.main_engine_power > 0 && self.main_engine_power <= 10 {
-                Err("You are mesmerized by the station becoming smaller and smaller as the shuttle slowly drifts further into the deep space, until it completely disappears. You've used up the rest of the fuel, and there's no way back. 
-			
-                You'll live for days, maybe weeks, while the life support systems will be slowly shutting off. Maybe there's hope that some ship will still pick you up, maybe not. But you aren't in a good spot for sure.
-                
-                You've navigated away from the station, and you are completely lost in space.".to_string())
+                //game_state.lost = true;
+                Err("You are mesmerized by the station becoming smaller and smaller as the shuttle slowly drifts further into the deep space, until it completely disappears. You've used up the rest of the fuel, and there's no way back. You'll live for days, maybe weeks, while the life support systems will be slowly shutting off. Maybe there's hope that some ship will still pick you up, maybe not. But you aren't in a good spot for sure. 
+
+You've navigated away from the station, and you are completely lost in space.".to_string())
             } else {
-                Err("You are thrown in the captains chair. Stars become smears, the Gs feel like an ogre's foot on your chest. You are getting farther and farther into deep space at an alarming rate. 
-			
-                Suddenly, the accelleration stops. You realize the fuel ran out. The lights blink once again and turn off.
-                
-                This is the end.".to_string())
+                Err("You are thrown in the captains chair. Stars become smears, the Gs feel like an ogre's foot on your chest. You are getting farther and farther into deep space at an alarming rate.
+Suddenly, the accelleration stops. You realize the fuel ran out. The lights blink once again and turn off.
+This is the end.".to_string())
             }
-            //std::process::exit(0);
             //Ok("Main thrust activated.".to_string())
         } else {
             Err("Cannot activate thrust. Ensure main engine is on and power is set.".to_string())
@@ -196,7 +193,7 @@ impl ShuttleState {
         }
 
         if self.is_correct_approach_for_docking() {
-            Ok("You have successfully maneuvered the shuttle for docking. Congratulations, you've docked at the station!".to_string())
+            Ok("You have successfully maneuvered the shuttle for docking. Congratulations, you've docked at the station! Now let's see what awaits for you next...".to_string())
         } else {
             self.check_failed_maneuvering()
         }
@@ -213,12 +210,10 @@ impl ShuttleState {
         // Checks for various failed maneuvering scenarios
         if self.maneuver_vector.0 < 181 || self.maneuver_vector.0 > 359 || self.maneuver_vector.1 < 240 || self.maneuver_vector.1 > 320 {
             Err("You carefully navigate the shuttle... away from the station. Oh no! You have no idea where the station went, as it's no longer visible in any of the view ports. Now you'll die from cold as the shuttle tumbles through the void, no habitable worlds or trade routes for lightyears around you.
-				
-            You lost.".to_string())
+You lost.".to_string())
         } else {
-            Err("As if in slow motion, the shuttle floats towards the station. Your hope that the approach vector is correct is quickly crushed - just as the shuttle got crushed against the station. 
-            
-            You lost.".to_string())
+            Err("As if in slow motion, the shuttle floats towards the station. Your hope that the approach vector is correct is quickly crushed - just as the shuttle got crushed against the station.
+You lost.".to_string())
         }
     }
 

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::entity::{Entity, EntityId};
 use crate::entity::item::{ItemId};
-use crate::world::room::{RoomIdentifier, Access};
+use crate::world::room::{RoomIdentifier, Access, Direction, PassageType};
 use crate::entity::furniture::main_terminal::MainTerminalCommand;
 use crate::world::data::World;
 use crate::engine::shuttle::ShuttleState;
@@ -15,6 +15,7 @@ pub struct GameState {
     pub world: World,                  
     pub inventory: Vec<ItemId>,
     shuttle_state: ShuttleState,
+    pub lost: bool,
 }
 
 pub struct RoomState {
@@ -33,7 +34,10 @@ impl GameState {
             room_states.insert(room_id, RoomState { is_explored: false });
         }
 
-        let inventory = vec![ItemId::AssistantCard];
+        let inventory = vec![
+                ItemId::AssistantCard,
+                ItemId::CaptainCard, // for Debugging
+            ];
 
         GameState {
             current_room: starting_room,
@@ -41,6 +45,7 @@ impl GameState {
             world,
             inventory,
             shuttle_state: ShuttleState::new(),
+            lost: false,
         }
     }
 
@@ -60,9 +65,26 @@ impl GameState {
 
     pub fn enter_shuttle_command(&mut self, command: &str) -> Result<String, String> {
         match MainTerminalCommand::from_string(command) {
-            Ok(parsed_command) => self.shuttle_state.handle_command(parsed_command),
-            Err(e) => Err(e.to_string()),
+            Ok(parsed_command) => {
+                let result = self.shuttle_state.handle_command(parsed_command);
+                if let Ok(ref message) = result {
+                    if message.starts_with("You have successfully maneuvered the shuttle for docking.") {
+                        if let Some(airlock_room) = self.world.rooms.get_mut(&RoomIdentifier::AirlockA) {
+                            airlock_room.connected_rooms = vec!((Direction::North, PassageType::Free, RoomIdentifier::StationAirlock));
+                        }
+                    }
+                }
+                result
+            }
+            Err(e) => {
+                if e.starts_with("You are mesmerized") ||
+                   e.starts_with("You are thrown") ||
+                   e.starts_with("You carefully navigate the shuttle") ||
+                   e.starts_with("As if in slow motion") {
+                    self.lost = true; 
+                }
+                Err(e.to_string())
+            }
         }
     }
-    
 }
