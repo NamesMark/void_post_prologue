@@ -2,17 +2,16 @@
 mod utils;
 
 mod engine;
+mod entity;
 mod parser;
 mod world;
-mod entity;
-
 
 //use world::World;
-use world::room::RoomIdentifier;
 use world::room::Direction;
+use world::room::RoomIdentifier;
 
-use engine::state::GameState;
 use engine::actions;
+use engine::state::GameState;
 use engine::tui;
 use parser::command::Command;
 use rand::prelude::SliceRandom;
@@ -22,7 +21,7 @@ fn main() {
 
     println!("{}", game_state.current_room_first_thoughts());
     println!("{}", game_state.current_room_description());
-    
+
     loop {
         if game_state.lost {
             std::process::exit(0);
@@ -109,12 +108,12 @@ fn handle_movement(game_state: &mut GameState, direction: Direction) {
     match actions::move_in_direction(game_state, direction) {
         Ok(new_description) => {
             println!("{}", new_description);
-        },
+        }
         Err(error) => {
             print_any!(format!("I can't go to {}: {}", direction, error),
                        format!("There's nowhere to go at {}, I think?", direction),
                        format!("I could try, I remember walking through solid walls worked at a certain spaceport platform to get on a spacecruiser to the nanoscience school for gifted kids... or was it in a holoseries?..")
         );
-        },
+        }
     }
 }

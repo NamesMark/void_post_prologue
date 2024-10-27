@@ -1,6 +1,6 @@
-use strum_macros::{EnumIter, Display};
 use crate::entity::{furniture::Furniture, EntityId};
 use std::cmp::Ordering;
+use strum_macros::{Display, EnumIter};
 
 #[derive(EnumIter, Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum RoomIdentifier {
@@ -24,7 +24,7 @@ pub enum RoomIdentifier {
     StorageHold,
     CrewCabins,
 
-    StationAirlock
+    StationAirlock,
 }
 
 #[derive(Display, PartialEq, Clone, Copy)]
@@ -52,7 +52,6 @@ pub enum PassageType {
     Free,
 }
 
-
 impl Access {
     fn value(&self) -> i32 {
         match self {
@@ -77,7 +76,6 @@ impl Ord for Access {
         self.value().cmp(&other.value())
     }
 }
-
 
 pub struct RoomAttributes {
     pub room_identifier: RoomIdentifier,

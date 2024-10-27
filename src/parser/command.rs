@@ -1,43 +1,43 @@
 use crate::world::room::Direction;
 
 pub enum Command {
-    Look(Option<String>),  // Look at something specific
-    Examine(Option<String>),  // Examine something in detail
-    
-    Open(String),         // Open something
-    Close(String),        // Close something
+    Look(Option<String>),    // Look at something specific
+    Examine(Option<String>), // Examine something in detail
 
-    Go(Direction),        // Move in a direction
+    Open(String),  // Open something
+    Close(String), // Close something
+
+    Go(Direction), // Move in a direction
     //Enter(String),        // Enter something
-    
+
     // Interaction
-    Take(String),         // Take an object
-    Drop(String),         // Drop an object
+    Take(String),             // Take an object
+    Drop(String),             // Drop an object
     TakeFrom(String, String), // Take from a container
-    PutInto(String, String), // Put into a container
-    Use(String),          // Use an object
-    Enter(String),         // Enter a command
-    Combine(String, String), // Combine two items
-    Push(String),         // Push something
-    Pull(String),         // Pull something
-    Turn(String),         // Turn something (like a knob or switch)
-    Read(String),         // Read something (like a note)
-    Eat(String),          // Eat something that's a food
-    
+    PutInto(String, String),  // Put into a container
+    Use(String),              // Use an object
+    Enter(String),            // Enter a command
+    Combine(String, String),  // Combine two items
+    Push(String),             // Push something
+    Pull(String),             // Pull something
+    Turn(String),             // Turn something (like a knob or switch)
+    Read(String),             // Read something (like a note)
+    Eat(String),              // Eat something that's a food
+
     // Communication
     // TalkTo(String),       // Talk to a character
     // Give(String, String), // Give an item to someone
-    
-    // Inventory & status
-    Inventory,            // Check your items
-    Status,               // Check player's status or health
-    
-    // Misc
-    Help,                 // Show available commands
-    Save,                 // Save the game
-    Load,                 // Load the game
 
-    // TODO: always can add more commands lol
+    // Inventory & status
+    Inventory, // Check your items
+    Status,    // Check player's status or health
+
+    // Misc
+    Help, // Show available commands
+    Save, // Save the game
+    Load, // Load the game
+
+          // TODO: always can add more commands lol
 }
 
 pub fn parse(input: &str) -> Option<Command> {
@@ -52,8 +52,16 @@ pub fn parse(input: &str) -> Option<Command> {
         ["close", obj] | ["c", obj] => Some(Command::Close(obj.to_string())),
 
         ["take", obj] | ["get", obj] | ["pick", "up", obj] => Some(Command::Take(obj.to_string())),
-        ["take", obj, "from", cont] | ["get", obj, "from", cont] | ["pick", "up", obj, "from", cont] | ["pick", obj, "from", cont] | ["retrieve", obj, "from", cont] => Some(Command::TakeFrom(obj.to_string(), cont.to_string())),
-        ["put", obj, "into", cont] | ["place", obj, "into", cont] => Some(Command::PutInto(obj.to_string(), cont.to_string())),
+        ["take", obj, "from", cont]
+        | ["get", obj, "from", cont]
+        | ["pick", "up", obj, "from", cont]
+        | ["pick", obj, "from", cont]
+        | ["retrieve", obj, "from", cont] => {
+            Some(Command::TakeFrom(obj.to_string(), cont.to_string()))
+        }
+        ["put", obj, "into", cont] | ["place", obj, "into", cont] => {
+            Some(Command::PutInto(obj.to_string(), cont.to_string()))
+        }
 
         ["drop", obj] => Some(Command::Drop(obj.to_string())),
         ["use", obj] => Some(Command::Use(obj.to_string())),
@@ -65,11 +73,11 @@ pub fn parse(input: &str) -> Option<Command> {
         ["read", obj] => Some(Command::Read(obj.to_string())),
         // ["talk", "to", person] => Some(Command::TalkTo(person.to_string())),
         // ["give", obj, "to", person] => Some(Command::Give(obj.to_string(), person.to_string())),
-        ["eat", obj] | ["consume", obj]  => Some(Command::Eat(obj.to_string())),
+        ["eat", obj] | ["consume", obj] => Some(Command::Eat(obj.to_string())),
 
         ["inventory"] | ["i"] => Some(Command::Inventory),
         ["status"] => Some(Command::Status),
-        
+
         ["help"] | ["h"] => Some(Command::Help),
         ["save"] => Some(Command::Save),
         ["load"] => Some(Command::Load),
@@ -86,9 +94,10 @@ pub fn parse(input: &str) -> Option<Command> {
 
 fn strip_articles_and_join(words: &[&str]) -> String {
     let articles = ["the", "a", "an"];
-    words.iter()
-         .filter(|&word| !articles.contains(word))
-         .cloned()
-         .collect::<Vec<&str>>()
-         .join(" ")
+    words
+        .iter()
+        .filter(|&word| !articles.contains(word))
+        .cloned()
+        .collect::<Vec<&str>>()
+        .join(" ")
 }

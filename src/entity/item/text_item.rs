@@ -1,9 +1,9 @@
 use std::any::Any;
 
-use super::{Entity, EntityId, Item, ItemId};
-use super::Size;
 use super::Readable;
-use crate::{impl_entity};
+use super::Size;
+use super::{Entity, EntityId, Item, ItemId};
+use crate::impl_entity;
 
 pub struct TextItem {
     id: EntityId,
@@ -14,8 +14,20 @@ pub struct TextItem {
 }
 
 impl TextItem {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contents: String) -> Self {
-        TextItem { id, name, aliases, description, contents}
+    pub fn new(
+        id: EntityId,
+        name: String,
+        aliases: Vec<String>,
+        description: String,
+        contents: String,
+    ) -> Self {
+        TextItem {
+            id,
+            name,
+            aliases,
+            description,
+            contents,
+        }
     }
 }
 
@@ -53,7 +65,7 @@ impl Entity for TextItem {
     fn as_readable(&self) -> Option<&dyn Readable> {
         Some(self)
     }
-    fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> { 
+    fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> {
         Some(self)
     }
 }

@@ -1,9 +1,9 @@
 use std::any::Any;
 
-use super::{Entity, EntityId, Item, ItemId};
-use super::Size;
 use super::Edible;
-use crate::{impl_entity};
+use super::Size;
+use super::{Entity, EntityId, Item, ItemId};
+use crate::impl_entity;
 
 pub struct Food {
     id: EntityId,
@@ -14,7 +14,12 @@ pub struct Food {
 
 impl Food {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String) -> Self {
-        Food { id, name, aliases, description}
+        Food {
+            id,
+            name,
+            aliases,
+            description,
+        }
     }
 }
 
@@ -51,7 +56,7 @@ impl Entity for Food {
     fn as_edible(&self) -> Option<&dyn Edible> {
         Some(self)
     }
-    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> { 
+    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> {
         Some(self)
     }
 }

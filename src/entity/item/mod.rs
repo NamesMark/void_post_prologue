@@ -2,10 +2,10 @@ pub mod container;
 pub mod food;
 pub mod text_item;
 
+use super::{Entity, EntityId};
 use crate::{impl_entity, impl_entity_containable};
 use std::any::Any;
-use strum_macros::{EnumIter, Display};
-use super::{Entity, EntityId};
+use strum_macros::{Display, EnumIter};
 
 #[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ItemId {
@@ -19,13 +19,10 @@ pub enum ItemId {
     FoodSurrogateBottle,
     Fork,
     LuckyCoin,
-    
 
-    
     CounterNote,
     ShuttleManual,
-    
-    
+
     AssistantCard,
     BosunCard,
     CaptainCard,
@@ -33,7 +30,7 @@ pub enum ItemId {
     SpaceSuit,
 
     #[default]
-    Dust
+    Dust,
 }
 
 pub enum Size {
@@ -64,12 +61,22 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, size: Size) -> Self {
-        Item { id, name, aliases, description, size }
+    pub fn new(
+        id: EntityId,
+        name: String,
+        aliases: Vec<String>,
+        description: String,
+        size: Size,
+    ) -> Self {
+        Item {
+            id,
+            name,
+            aliases,
+            description,
+            size,
+        }
     }
 }
-
-
 
 pub struct SecretBottle {
     id: EntityId,
@@ -90,7 +97,10 @@ impl SecretBottle {
             Err("Can't get to it!".to_string())
         } else {
             if self.contains.is_some() {
-                println!("You manage to get the {} out of {}.", self.liquid, self.name);
+                println!(
+                    "You manage to get the {} out of {}.",
+                    self.liquid, self.name
+                );
                 self.liquid = Liquid::Air;
                 //self.contains.take();
                 Ok(())
@@ -131,8 +141,6 @@ impl LiquidContainable for SecretBottle {
     }
 }
 
-
-
 #[derive(Debug)]
 pub struct Drink {
     id: EntityId,
@@ -143,7 +151,12 @@ pub struct Drink {
 
 impl Drink {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String) -> Self {
-        Drink { id, name, aliases, description}
+        Drink {
+            id,
+            name,
+            aliases,
+            description,
+        }
     }
 }
 
@@ -165,8 +178,20 @@ pub struct LiquidContainer {
 }
 
 impl LiquidContainer {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, liquid: Liquid) -> Self {
-        LiquidContainer { id, name, aliases, description, liquid}
+    pub fn new(
+        id: EntityId,
+        name: String,
+        aliases: Vec<String>,
+        description: String,
+        liquid: Liquid,
+    ) -> Self {
+        LiquidContainer {
+            id,
+            name,
+            aliases,
+            description,
+            liquid,
+        }
     }
 }
 
@@ -200,8 +225,6 @@ impl LiquidContainable for LiquidContainer {
     }
 }
 
-
-
 pub trait Containable {
     fn can_contain(&self, entity_id: EntityId) -> bool;
     fn put(&mut self, entity_id: EntityId) -> Result<(), String>;
@@ -214,7 +237,6 @@ pub trait LiquidContainable {
     fn drink(&mut self) -> Result<(), String>;
     fn pour(&mut self) -> Result<(), String>;
 }
-
 
 pub trait Openable {
     fn open(&mut self) -> Result<(), &'static str>;
