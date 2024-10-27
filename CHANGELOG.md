@@ -10,10 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extract RON config
 - Extract engine into a crate
 
-
 ## [0.1.1] - 2024-10-27
 ### Added
 - CLI: signal handling with Tokio
+- parser: ignore articles
+- parser: add `ls` alias (I've typed it in many types by mistake to try to see the room exits - let it be there)
 
 ## [0.1.0] - 2023-11-13
 - Initial playable game prototype.

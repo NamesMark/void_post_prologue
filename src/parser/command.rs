@@ -47,7 +47,7 @@ pub fn parse(input: &str) -> Option<Command> {
     let words = sanitize_and_split(&input_lowercase);
 
     match words.iter().as_slice() {
-        ["x", "room"] => Some(Command::Look(None)),
+        ["x", "room", "ls"] => Some(Command::Look(None)),
         ["look", obj] | ["examine", obj] | ["x", obj] => Some(Command::Look(Some(obj.to_string()))),
         ["look"] | ["examine"] | ["x"] => Some(Command::Look(None)),
 
