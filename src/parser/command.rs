@@ -43,8 +43,8 @@ pub enum Command {
 }
 
 pub fn parse(input: &str) -> Option<Command> {
-    let sanitized_words = sanitize_and_split(input);
-    let words: Vec<&str> = sanitized_words.iter().map(|s| s.as_str()).collect();
+    let input_lowercase = input.trim().to_lowercase();
+    let words = sanitize_and_split(&input_lowercase);
 
     match words.iter().as_slice() {
         ["x", "room"] => Some(Command::Look(None)),
@@ -95,15 +95,11 @@ pub fn parse(input: &str) -> Option<Command> {
     }
 }
 
-fn sanitize_and_split(input: &str) -> Vec<String> {
-    let input_lowercase = input.trim().to_lowercase();
-    // TODO: should be possible to optimize
-    let parts = input_lowercase
+fn sanitize_and_split(input: &str) -> Vec<&str> {
+    input
         .split_whitespace()
         .filter(|word| !is_article(word))
-        .map(|w| w.to_string())
-        .collect();
-    parts
+        .collect()
 }
 
 const ARTICLES: [&str; 3] = ["the", "a", "an"];
