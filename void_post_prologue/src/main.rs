@@ -1,12 +1,13 @@
 use std::fmt::Display;
 
-use voidlogue::engine::state::GameState;
-use voidlogue::parser;
-use voidlogue::process_input;
-use voidlogue::world::room::RoomIdentifier;
+use adventurine::engine::state::GameState;
+use adventurine::parser;
+use adventurine::world::room::RoomIdentifier;
 
 use tokio::io::{self, AsyncBufReadExt, BufReader};
 use tokio::{select, signal};
+
+use voidlogue::process_input;
 
 #[tokio::main]
 async fn main() {

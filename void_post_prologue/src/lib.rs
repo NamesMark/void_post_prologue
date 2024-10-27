@@ -1,11 +1,11 @@
-//use world::World;
-use world::room::Direction;
+use adventurine::engine::actions;
+use adventurine::engine::state::GameState;
+use adventurine::engine::tui;
+use adventurine::parser::command::Command;
+use adventurine::world::room::Direction;
 
-use engine::actions;
-use engine::state::GameState;
-use engine::tui;
-use parser::command::Command;
-use rand::prelude::SliceRandom;
+#[macro_use]
+extern crate adventurine;
 
 pub fn process_input(game_state: &mut GameState, command: Option<Command>) -> String {
     match command {

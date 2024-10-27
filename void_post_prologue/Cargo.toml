@@ -11,3 +11,4 @@ rand = "0.8.5"
 strum = "0.25"
 strum_macros = "0.25"
 tokio = { version = "1.41.0", features = ["full"] }
+adventurine = { path = "../adventurine"}
