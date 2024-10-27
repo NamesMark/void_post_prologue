@@ -1,20 +1,32 @@
 use std::any::Any;
 
-use crate::{impl_entity, impl_entity_containable};
 use super::{Entity, EntityId};
-use crate::entity::item::{ItemId, Containable, Usable};
+use crate::entity::item::{Containable, ItemId, Usable};
+use crate::{impl_entity, impl_entity_containable};
 
 pub struct NavigationComputer {
     id: EntityId,
     name: String,
     aliases: Vec<String>,
     description: String,
-    contains: Vec<EntityId>, 
+    contains: Vec<EntityId>,
 }
 
 impl NavigationComputer {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
-        NavigationComputer { id, name, aliases, description, contains}
+    pub fn new(
+        id: EntityId,
+        name: String,
+        aliases: Vec<String>,
+        description: String,
+        contains: Vec<EntityId>,
+    ) -> Self {
+        NavigationComputer {
+            id,
+            name,
+            aliases,
+            description,
+            contains,
+        }
     }
 
     // pub fn enter_command() {
@@ -45,7 +57,7 @@ impl Entity for NavigationComputer {
     fn as_any_mut(&mut self) -> &mut dyn Any {
         self
     }
-    
+
     fn as_usable(&self) -> Option<&dyn Usable> {
         Some(self)
     }

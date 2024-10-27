@@ -5,8 +5,8 @@ pub mod sink;
 use std::any::Any;
 use strum_macros::EnumIter;
 
+use super::item::{Containable, ItemId};
 use super::{Entity, EntityId};
-use super::item::{ItemId, Containable};
 use crate::{impl_entity, impl_entity_containable};
 
 #[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -22,7 +22,7 @@ pub enum FurnId {
     BookShelves,
     CaptainsIlluminator,
     CaptainsDesk,
-    
+
     NavigationComputer,
     MainTerminal,
 
@@ -33,7 +33,7 @@ pub enum FurnId {
 
     WarningSign,
     #[default]
-    Dust
+    Dust,
 }
 
 impl_entity_containable!(Furniture);
@@ -43,12 +43,24 @@ pub struct Furniture {
     name: String,
     aliases: Vec<String>,
     description: String,
-    contains: Vec<EntityId>, 
+    contains: Vec<EntityId>,
 }
 
 impl Furniture {
-    pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String, contains: Vec<EntityId>) -> Self {
-        Furniture { id, name, aliases, description, contains }
+    pub fn new(
+        id: EntityId,
+        name: String,
+        aliases: Vec<String>,
+        description: String,
+        contains: Vec<EntityId>,
+    ) -> Self {
+        Furniture {
+            id,
+            name,
+            aliases,
+            description,
+            contains,
+        }
     }
 }
 

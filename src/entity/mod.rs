@@ -1,10 +1,10 @@
-pub mod item;
 pub mod furniture;
+pub mod item;
 
-use std::any::Any;
 use furniture::FurnId;
-use item::{ItemId, Containable, Edible, Readable, Usable};
-use strum_macros::{EnumIter, Display};
+use item::{Containable, Edible, ItemId, Readable, Usable};
+use std::any::Any;
+use strum_macros::{Display, EnumIter};
 
 #[derive(EnumIter, Default, Debug, Display, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum EntityId {
@@ -21,14 +21,30 @@ pub trait Entity {
     fn description(&self) -> &str;
     fn as_any(&self) -> &dyn Any;
     fn as_any_mut(&mut self) -> &mut dyn Any;
-    fn as_containable(&self) -> Option<&dyn Containable> { None }
-    fn as_containable_mut(&mut self) -> Option<&mut dyn Containable> { None }
-    fn as_edible(&self) -> Option<&dyn Edible> { None }
-    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> { None }
-    fn as_readable(&self) -> Option<&dyn Readable> { None }
-    fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> { None }
-    fn as_usable(&self) -> Option<&dyn Usable> { None }
-    fn as_usable_mut(&mut self) -> Option<&mut dyn Usable> { None }
+    fn as_containable(&self) -> Option<&dyn Containable> {
+        None
+    }
+    fn as_containable_mut(&mut self) -> Option<&mut dyn Containable> {
+        None
+    }
+    fn as_edible(&self) -> Option<&dyn Edible> {
+        None
+    }
+    fn as_edible_mut(&mut self) -> Option<&mut dyn Edible> {
+        None
+    }
+    fn as_readable(&self) -> Option<&dyn Readable> {
+        None
+    }
+    fn as_readable_mut(&mut self) -> Option<&mut dyn Readable> {
+        None
+    }
+    fn as_usable(&self) -> Option<&dyn Usable> {
+        None
+    }
+    fn as_usable_mut(&mut self) -> Option<&mut dyn Usable> {
+        None
+    }
 }
 
 pub struct PassiveEntity {
@@ -40,7 +56,12 @@ pub struct PassiveEntity {
 
 impl PassiveEntity {
     pub fn new(id: EntityId, name: String, aliases: Vec<String>, description: String) -> Self {
-        PassiveEntity { id, name, aliases, description}
+        PassiveEntity {
+            id,
+            name,
+            aliases,
+            description,
+        }
     }
 }
 
@@ -59,7 +80,7 @@ macro_rules! impl_entity {
             fn aliases(&self) -> &Vec<String> {
                 &self.aliases
             }
-        
+
             fn description(&self) -> &str {
                 &self.description
             }
@@ -82,19 +103,19 @@ macro_rules! impl_entity_containable {
                 fn get_id(&self) -> EntityId {
                     self.id
                 }
-    
+
                 fn name(&self) -> &str {
                     &self.name
                 }
-    
+
                 fn aliases(&self) -> &Vec<String> {
                     &self.aliases
                 }
-            
+
                 fn description(&self) -> &str {
                     &self.description
                 }
-    
+
                 fn as_any(&self) -> &dyn Any {
                     self
                 }

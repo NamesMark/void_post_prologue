@@ -3,9 +3,9 @@ use crate::GameState;
 
 pub struct ShuttleState {
     main_engine_on: bool,
-    main_engine_power: u8, // 0-63
+    main_engine_power: u8,       // 0-63
     maneuver_vector: (i16, i16), // x, y, z (0-360 each)
-    maneuver_power: u8, // 0-7
+    maneuver_power: u8,          // 0-7
     fuel_tank: FuelTank,
     fuel_pump_on: bool,
 }
@@ -40,7 +40,9 @@ impl ShuttleState {
             MainTerminalCommand::SetManeurXVector(x) => self.set_maneuver_vector_x(x),
             MainTerminalCommand::SetManeurYVector(y) => self.set_maneuver_vector_y(y),
             MainTerminalCommand::ActivateManeuverEngines => self.activate_maneuver_engines(),
-            MainTerminalCommand::SetManeuverThrustLevel(level) => self.set_maneuver_thrust_level(level),
+            MainTerminalCommand::SetManeuverThrustLevel(level) => {
+                self.set_maneuver_thrust_level(level)
+            }
             MainTerminalCommand::ManeuverEngineStatus => self.maneuver_engine_status(),
 
             MainTerminalCommand::SwitchToFuelTankA => self.switch_to_fuel_tank_a(),
@@ -55,7 +57,6 @@ impl ShuttleState {
         if self.fuel_tank == FuelTank::B && self.fuel_pump_on {
             self.main_engine_on = true;
             Ok("Main engine started.".to_string())
-            
         } else {
             Err("Main engine start failure: no fuel.".to_string())
         }
@@ -185,7 +186,9 @@ This is the end.".to_string())
         }
 
         if x_vector < 0 || x_vector > 360 || y_vector < 0 || y_vector > 360 {
-            return Err("Invalid vector setting: Out of range. Must be between 0 and 360.".to_string());
+            return Err(
+                "Invalid vector setting: Out of range. Must be between 0 and 360.".to_string(),
+            );
         }
 
         if power < 0 || power > 7 {
@@ -200,15 +203,20 @@ This is the end.".to_string())
     }
 
     fn is_correct_approach_for_docking(&self) -> bool {
-        (self.maneuver_vector.0 >= 340 && self.maneuver_vector.0 <= 350) &&
-        ((self.maneuver_vector.1 >= 350 && self.maneuver_vector.1 <= 360) ||
-        (self.maneuver_vector.1 >= 0 && self.maneuver_vector.1 <= 10)) &&
-        self.maneuver_power >= 1 && self.maneuver_power <= 5
+        (self.maneuver_vector.0 >= 340 && self.maneuver_vector.0 <= 350)
+            && ((self.maneuver_vector.1 >= 350 && self.maneuver_vector.1 <= 360)
+                || (self.maneuver_vector.1 >= 0 && self.maneuver_vector.1 <= 10))
+            && self.maneuver_power >= 1
+            && self.maneuver_power <= 5
     }
 
     fn check_failed_maneuvering(&self) -> Result<String, String> {
         // Checks for various failed maneuvering scenarios
-        if self.maneuver_vector.0 < 181 || self.maneuver_vector.0 > 359 || self.maneuver_vector.1 < 240 || self.maneuver_vector.1 > 320 {
+        if self.maneuver_vector.0 < 181
+            || self.maneuver_vector.0 > 359
+            || self.maneuver_vector.1 < 240
+            || self.maneuver_vector.1 > 320
+        {
             Err("You carefully navigate the shuttle... away from the station. Oh no! You have no idea where the station went, as it's no longer visible in any of the view ports. Now you'll die from cold as the shuttle tumbles through the void, no habitable worlds or trade routes for lightyears around you.
 You lost.".to_string())
         } else {
@@ -217,10 +225,8 @@ You lost.".to_string())
         }
     }
 
-
     fn switch_to_fuel_tank_b(&mut self) -> Result<String, String> {
         self.fuel_tank = FuelTank::B;
         Ok("Switched to fuel tank B.".to_string())
     }
-
 }

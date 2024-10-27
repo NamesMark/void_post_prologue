@@ -1,6 +1,6 @@
-use strum_macros::{EnumIter, Display};
 use crate::entity::{furniture::Furniture, EntityId};
 use std::cmp::Ordering;
+use strum_macros::{Display, EnumIter};
 
 #[derive(EnumIter, Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum RoomIdentifier {
@@ -24,7 +24,7 @@ pub enum RoomIdentifier {
     StorageHold,
     CrewCabins,
 
-    StationAirlock
+    StationAirlock,
 }
 
 #[derive(Display, PartialEq, Clone, Copy)]
@@ -52,7 +52,6 @@ pub enum PassageType {
     Free,
 }
 
-
 impl Access {
     fn value(&self) -> i32 {
         match self {
@@ -78,7 +77,6 @@ impl Ord for Access {
     }
 }
 
-
 pub struct RoomAttributes {
     pub room_identifier: RoomIdentifier,
     pub visited: bool,
@@ -86,39 +84,6 @@ pub struct RoomAttributes {
     pub short_description: String,
     pub full_description: String,
     pub first_thoughts: String,
-    //pub potential_items: Vec<ItemBlueprint>,
-    //pub furniture: Vec<Furniture>,
     pub entities: Vec<EntityId>,
     pub connected_rooms: Vec<(Direction, PassageType, RoomIdentifier)>,
 }
-
-// pub enum RoomBlueprint {
-//     Storage(RoomAttributes),
-//     Mess(RoomAttributes),
-//     PassengersRoom(RoomAttributes),
-//     BosunsRoom(RoomAttributes),
-//     CaptainsRoom(RoomAttributes),
-//     AirlockA(RoomAttributes),
-//     StorageHold(RoomAttributes),
-//     Engine(RoomAttributes),
-//     Hallway(RoomAttributes),
-//     Cockpit(RoomAttributes),
-// }
-
-// impl RoomBlueprint {
-//     pub fn description(&self) -> &str {
-//         match self {
-//             RoomBlueprint::Storage(attributes) => &attributes.default_description,
-//             RoomBlueprint::Mess(attributes) => &attributes.default_description,
-//             RoomBlueprint::PassengersRoom(attributes) => &attributes.default_description,
-//             RoomBlueprint::BosunsRoom(attributes) => &attributes.default_description,
-//             RoomBlueprint::CaptainsRoom(attributes) => &attributes.default_description,
-//             RoomBlueprint::AirlockA(attributes) => &attributes.default_description,
-//             RoomBlueprint::StorageHold(attributes) => &attributes.default_description,
-//             RoomBlueprint::Engine(attributes) => &attributes.default_description,
-//             RoomBlueprint::Hallway(attributes) => &attributes.default_description,
-//             RoomBlueprint::Cockpit(attributes) => &attributes.default_description,
-//             _ => "Room not found."
-//         }
-//     }
-// }

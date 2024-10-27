@@ -1,15 +1,15 @@
-use std::collections::HashMap;
-use super::room::{RoomAttributes, RoomIdentifier, Direction, Access};
-use crate::entity::furniture::{Furniture, FurnId};
+use super::room::{Access, Direction, RoomAttributes, RoomIdentifier};
 use crate::entity::furniture::main_terminal::MainTerminal;
 use crate::entity::furniture::navigation_computer::NavigationComputer;
 use crate::entity::furniture::sink::Sink;
-use crate::entity::item::{Item, ItemId, Drink, Size, Containable, Edible, Readable, Usable};
+use crate::entity::furniture::{FurnId, Furniture};
 use crate::entity::item::container::Container;
-use crate::entity::item::text_item::TextItem;
 use crate::entity::item::food::Food;
+use crate::entity::item::text_item::TextItem;
+use crate::entity::item::{Containable, Drink, Edible, Item, ItemId, Readable, Size, Usable};
 use crate::entity::{Entity, EntityId, PassiveEntity};
 use crate::world::room::PassageType;
+use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
 
@@ -24,7 +24,7 @@ impl World {
         let mut rooms = HashMap::new();
         let mut entities = HashMap::new();
         //let mut items = HashMap::new();
-        
+
         // Populate rooms hashmap
         rooms.insert(RoomIdentifier::Storage, 
             RoomAttributes {
@@ -183,22 +183,31 @@ impl World {
                 ],
             }
         );
-        rooms.insert(RoomIdentifier::AirlockA, 
+        rooms.insert(
+            RoomIdentifier::AirlockA,
             RoomAttributes {
                 room_identifier: RoomIdentifier::AirlockA,
                 visited: false,
                 access: Access::D,
-                short_description: "You squeeze into a tiny square space used to get to and from the shuttle.".to_string(),
+                short_description:
+                    "You squeeze into a tiny square space used to get to and from the shuttle."
+                        .to_string(),
                 full_description: "".to_string(),
                 first_thoughts: "".to_string(),
-                entities: vec![
-                    EntityId::Furniture(FurnId::WarningSign),
-                ],
+                entities: vec![EntityId::Furniture(FurnId::WarningSign)],
                 connected_rooms: vec![
-                    (Direction::West, PassageType::Door, RoomIdentifier::OpenSpaceAirlockA),
-                    (Direction::East, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                    (
+                        Direction::West,
+                        PassageType::Door,
+                        RoomIdentifier::OpenSpaceAirlockA,
+                    ),
+                    (
+                        Direction::East,
+                        PassageType::Door,
+                        RoomIdentifier::AirlockCorridor,
+                    ),
                 ],
-            }
+            },
         );
         rooms.insert(RoomIdentifier::OpenSpaceAirlockA, 
             RoomAttributes {
@@ -229,24 +238,34 @@ impl World {
                 ],
             }
         );
-        rooms.insert(RoomIdentifier::AirlockB, 
+        rooms.insert(
+            RoomIdentifier::AirlockB,
             RoomAttributes {
                 room_identifier: RoomIdentifier::AirlockB,
                 visited: false,
                 access: Access::D,
-                short_description: "You squeeze into a tiny square space used to get to and from the shuttle.".to_string(),
+                short_description:
+                    "You squeeze into a tiny square space used to get to and from the shuttle."
+                        .to_string(),
                 full_description: "".to_string(),
                 first_thoughts: "".to_string(),
-                entities: vec![
-                    EntityId::Furniture(FurnId::WarningSign),
-                ],
+                entities: vec![EntityId::Furniture(FurnId::WarningSign)],
                 connected_rooms: vec![
-                    (Direction::East, PassageType::Door, RoomIdentifier::OpenSpaceAirlockB),
-                    (Direction::West, PassageType::Door, RoomIdentifier::AirlockCorridor),
+                    (
+                        Direction::East,
+                        PassageType::Door,
+                        RoomIdentifier::OpenSpaceAirlockB,
+                    ),
+                    (
+                        Direction::West,
+                        PassageType::Door,
+                        RoomIdentifier::AirlockCorridor,
+                    ),
                 ],
-            }
+            },
         );
-        rooms.insert(RoomIdentifier::OpenSpaceAirlockB, 
+        rooms.insert(
+            RoomIdentifier::OpenSpaceAirlockB,
             RoomAttributes {
                 room_identifier: RoomIdentifier::OpenSpaceAirlockB,
                 visited: false,
@@ -254,14 +273,15 @@ impl World {
                 short_description: "".to_string(),
                 full_description: "".to_string(),
                 first_thoughts: "".to_string(),
-                entities: vec![
-                ],
-                connected_rooms: vec![
-                    (Direction::West, PassageType::Door, RoomIdentifier::AirlockB),
-                ],
-            }
+                entities: vec![],
+                connected_rooms: vec![(
+                    Direction::West,
+                    PassageType::Door,
+                    RoomIdentifier::AirlockB,
+                )],
+            },
         );
-        
+
         rooms.insert(RoomIdentifier::TechCorridor, 
             RoomAttributes {
                 room_identifier: RoomIdentifier::TechCorridor,
@@ -295,7 +315,8 @@ impl World {
                 ],
             }
         );
-        rooms.insert(RoomIdentifier::TechCorridorNorth, 
+        rooms.insert(
+            RoomIdentifier::TechCorridorNorth,
             RoomAttributes {
                 room_identifier: RoomIdentifier::TechCorridorNorth,
                 visited: false,
@@ -303,12 +324,13 @@ impl World {
                 short_description: "The north section of the same technical corridor.".to_string(),
                 full_description: "".to_string(),
                 first_thoughts: "".to_string(),
-                entities: vec![
-                ],
-                connected_rooms: vec![
-                    (Direction::South, PassageType::Free, RoomIdentifier::TechCorridor),
-                ],
-            }
+                entities: vec![],
+                connected_rooms: vec![(
+                    Direction::South,
+                    PassageType::Free,
+                    RoomIdentifier::TechCorridor,
+                )],
+            },
         );
         rooms.insert(RoomIdentifier::Bridge, 
             RoomAttributes {
@@ -358,7 +380,6 @@ impl World {
             }
         );
 
-
         // ... Repeat for other rooms
 
         // Populate furniture:
@@ -369,7 +390,6 @@ impl World {
         for id in ItemId::iter() {
             entities.insert(EntityId::Item(id), World::create_item(id));
         }
-
 
         World { rooms, entities }
     }
@@ -522,7 +542,7 @@ impl World {
             //_ => unimplemented!(),
         }
     }
-    
+
     pub fn create_item(id: ItemId) -> Box<dyn Entity> {
         match id {
             ItemId::Bucket => Box::new(Container::new(
@@ -680,7 +700,6 @@ impl World {
         }
     }
 
-
     pub fn was_visited(&self, room_id: &RoomIdentifier) -> bool {
         if let Some(attributes) = self.rooms.get(&room_id) {
             attributes.visited
@@ -716,7 +735,10 @@ impl World {
     pub fn get_room_entities(&self, room_id: &RoomIdentifier) -> Option<&Vec<EntityId>> {
         self.rooms.get(room_id).map(|room| &room.entities)
     }
-    pub fn get_room_entities_mut(&mut self, room_id: &RoomIdentifier) -> Option<&mut Vec<EntityId>> {
+    pub fn get_room_entities_mut(
+        &mut self,
+        room_id: &RoomIdentifier,
+    ) -> Option<&mut Vec<EntityId>> {
         self.rooms.get_mut(room_id).map(|room| &mut room.entities)
     }
 
@@ -728,7 +750,11 @@ impl World {
         }
     }
 
-    pub fn get_adjacent_room(&self, room_id: &RoomIdentifier, direction: Direction) -> Option<(RoomIdentifier, &PassageType)> {
+    pub fn get_adjacent_room(
+        &self,
+        room_id: &RoomIdentifier,
+        direction: Direction,
+    ) -> Option<(RoomIdentifier, &PassageType)> {
         if let Some(room_attributes) = self.rooms.get(&room_id) {
             for (dir, passageType, adjacent_room_id) in &room_attributes.connected_rooms {
                 if *dir == direction {
@@ -737,41 +763,48 @@ impl World {
             }
         }
 
-        None 
+        None
     }
 
     pub fn get_containable(&self, entity_id: EntityId) -> Option<&dyn Containable> {
-        self.entities.get(&entity_id)
+        self.entities
+            .get(&entity_id)
             .and_then(|entity| entity.as_containable())
     }
 
     pub fn get_containable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Containable> {
-        self.entities.get_mut(&entity_id)
+        self.entities
+            .get_mut(&entity_id)
             .and_then(|entity| entity.as_containable_mut())
     }
 
     pub fn get_edible(&self, entity_id: EntityId) -> Option<&dyn Edible> {
-        self.entities.get(&entity_id)
+        self.entities
+            .get(&entity_id)
             .and_then(|entity| entity.as_edible())
     }
 
     pub fn get_edible_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Edible> {
-        self.entities.get_mut(&entity_id)
+        self.entities
+            .get_mut(&entity_id)
             .and_then(|entity| entity.as_edible_mut())
     }
 
     pub fn get_readable(&self, entity_id: EntityId) -> Option<&dyn Readable> {
-        self.entities.get(&entity_id)
+        self.entities
+            .get(&entity_id)
             .and_then(|entity| entity.as_readable())
     }
 
     pub fn get_readable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Readable> {
-        self.entities.get_mut(&entity_id)
+        self.entities
+            .get_mut(&entity_id)
             .and_then(|entity| entity.as_readable_mut())
     }
 
     pub fn get_usable_mut(&mut self, entity_id: EntityId) -> Option<&mut dyn Usable> {
-        self.entities.get_mut(&entity_id)
+        self.entities
+            .get_mut(&entity_id)
             .and_then(|entity| entity.as_usable_mut())
     }
 }
