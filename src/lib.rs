@@ -8,7 +8,6 @@ pub mod world;
 
 //use world::World;
 use world::room::Direction;
-use world::room::RoomIdentifier;
 
 use engine::actions;
 use engine::state::GameState;
