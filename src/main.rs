@@ -5,7 +5,11 @@ use voidlogue::parser;
 use voidlogue::process_input;
 use voidlogue::world::room::RoomIdentifier;
 
-fn main() {
+use tokio::io::{self, AsyncBufReadExt, BufReader};
+use tokio::{select, signal};
+
+#[tokio::main]
+async fn main() {
     let mut game_state = GameState::new(RoomIdentifier::Storage);
 
     // TODO: configure
@@ -21,41 +25,46 @@ fn main() {
     interface.post(&game_state.current_room_description());
 
     loop {
-        // if let Ok(_) = rx.try_recv() {
-        //     interface.post(&"Bye!");
-        //     break;
-        // }
+        select! {
+            _ = signal::ctrl_c() => {
+                interface.post(&"Bye!");
+                std::process::exit(0);
+            }
+            input = interface.get_input() => {
+                // TODO: Add a handler to receive game_lost signal
+                if game_state.lost {
+                    interface.post(&"Game has concluded. Ciao!");
+                    std::process::exit(0);
+                }
 
-        if game_state.lost {
-            interface.post(&"Game has concluded. Ciao!");
-            std::process::exit(0);
+                // Parse the input to Command
+                let parsed_command = parser::command::parse(&input);
+
+                // Act on the Command
+                let message = process_input(&mut game_state, parsed_command);
+
+                // Display the game response
+                interface.post(&message);
+            }
         }
-
-        // Get input from the player
-        let input = interface.get_input();
-
-        // Parse the input to Command
-        let parsed_command = parser::command::parse(&input);
-
-        // Act on the Command
-        let message = process_input(&mut game_state, parsed_command);
-
-        // Display the game response
-        interface.post(&message);
     }
 }
 
+#[async_trait::async_trait]
 trait Interface {
-    fn get_input(&self) -> String;
+    async fn get_input(&self) -> String;
     fn post(&self, msg: &dyn Display);
 }
 
 struct Cli;
 
+#[async_trait::async_trait]
 impl Interface for Cli {
-    fn get_input(&self) -> String {
+    async fn get_input(&self) -> String {
         let mut input = String::new();
-        std::io::stdin().read_line(&mut input).unwrap();
+        let stdin = io::stdin();
+        let mut reader = BufReader::new(stdin);
+        reader.read_line(&mut input).await.unwrap();
         input
     }
 
