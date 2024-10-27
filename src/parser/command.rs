@@ -42,7 +42,11 @@ pub enum Command {
 
 pub fn parse(input: &str) -> Option<Command> {
     let input_lowercase = input.trim().to_lowercase();
-    let parts: Vec<&str> = input_lowercase.split_whitespace().collect();
+    let parts: Vec<&str> = input_lowercase
+        .split_whitespace()
+        .filter(|word| !is_article(word))
+        .collect();
+
     match parts.as_slice() {
         ["x", "room"] => Some(Command::Look(None)),
         ["look", obj] | ["examine", obj] | ["x", obj] => Some(Command::Look(Some(obj.to_string()))),
@@ -92,11 +96,16 @@ pub fn parse(input: &str) -> Option<Command> {
     }
 }
 
+const ARTICLES: [&str; 3] = ["the", "a", "an"];
+
+fn is_article(word: &str) -> bool {
+    ARTICLES.iter().any(|&a| a == word)
+}
+
 fn strip_articles_and_join(words: &[&str]) -> String {
-    let articles = ["the", "a", "an"];
     words
         .iter()
-        .filter(|&word| !articles.contains(word))
+        .filter(|&word| is_article(word))
         .cloned()
         .collect::<Vec<&str>>()
         .join(" ")
