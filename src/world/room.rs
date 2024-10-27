@@ -27,8 +27,10 @@ pub enum RoomIdentifier {
     StationAirlock,
 }
 
-#[derive(Display, PartialEq, Clone, Copy)]
+#[derive(Default, Display, PartialEq, Clone, Copy)]
 pub enum Direction {
+    #[default]
+    Stay,
     North,
     East,
     South,

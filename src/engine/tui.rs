@@ -1,5 +1,7 @@
 use crate::engine::state::GameState;
-use crate::entity::{Entity, EntityId};
+use crate::entity::EntityId;
+use crate::Command;
+use strum::{EnumMessage, IntoEnumIterator};
 
 pub fn inventory(game_state: &GameState) -> String {
     let mut output = "Your inventory contains:\n".to_string();
@@ -22,5 +24,11 @@ pub fn inventory(game_state: &GameState) -> String {
 }
 
 pub fn help() -> String {
-    format!("Enter one of the following commands:")
+    let mut help_message = String::new();
+    help_message.push_str("Enter one of the following commands:");
+    for command in Command::iter() {
+        let message = command.get_message().unwrap_or("No description available");
+        help_message.push_str(&format!("{}: {}\n", command, message));
+    }
+    help_message
 }

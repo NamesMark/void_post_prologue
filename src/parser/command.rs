@@ -1,45 +1,77 @@
 use std::borrow::Cow;
 
+use strum::IntoEnumIterator;
+use strum_macros::{EnumIter, EnumMessage};
+
 use crate::world::room::Direction;
 
+#[derive(strum_macros::Display, EnumIter, EnumMessage)]
 pub enum Command {
-    Look(Option<String>),    // Look at something specific
-    Examine(Option<String>), // Examine something in detail
+    #[strum(message = "Look around or look at a specific object")]
+    Look(Option<String>),
 
-    Open(String),  // Open something
-    Close(String), // Close something
+    #[strum(message = "Examine something in detail")]
+    Examine(Option<String>),
 
-    Go(Direction), // Move in a direction
-    //Enter(String),        // Enter something
+    #[strum(message = "Open a door or container")]
+    Open(String),
 
-    // Interaction
-    Take(String),             // Take an object
-    Drop(String),             // Drop an object
-    TakeFrom(String, String), // Take from a container
-    PutInto(String, String),  // Put into a container
-    Use(String),              // Use an object
-    Enter(String),            // Enter a command
-    Combine(String, String),  // Combine two items
-    Push(String),             // Push something
-    Pull(String),             // Pull something
-    Turn(String),             // Turn something (like a knob or switch)
-    Read(String),             // Read something (like a note)
-    Eat(String),              // Eat something that's a food
+    #[strum(message = "Close a door or container")]
+    Close(String),
 
-    // Communication
-    // TalkTo(String),       // Talk to a character
-    // Give(String, String), // Give an item to someone
+    #[strum(message = "Move in a specific direction")]
+    Go(Direction),
 
-    // Inventory & status
-    Inventory, // Check your items
-    Status,    // Check player's status or health
+    #[strum(message = "Take an object")]
+    Take(String),
 
-    // Misc
-    Help, // Show available commands
-    Save, // Save the game
-    Load, // Load the game
+    #[strum(message = "Drop an object")]
+    Drop(String),
 
-          // TODO: always can add more commands lol
+    #[strum(message = "Take an object from a container")]
+    TakeFrom(String, String),
+
+    #[strum(message = "Put an object into a container")]
+    PutInto(String, String),
+
+    #[strum(message = "Use an object")]
+    Use(String),
+
+    #[strum(message = "Enter a command or space")]
+    Enter(String),
+
+    #[strum(message = "Combine two items")]
+    Combine(String, String),
+
+    #[strum(message = "Push something")]
+    Push(String),
+
+    #[strum(message = "Pull something")]
+    Pull(String),
+
+    #[strum(message = "Turn something, like a knob or switch")]
+    Turn(String),
+
+    #[strum(message = "Read something, like a note")]
+    Read(String),
+
+    #[strum(message = "Eat something that is a food")]
+    Eat(String),
+
+    #[strum(message = "Check your inventory")]
+    Inventory,
+
+    #[strum(message = "Check your status or health")]
+    Status,
+
+    #[strum(message = "Show available commands")]
+    Help,
+
+    #[strum(message = "Save the game")]
+    Save,
+
+    #[strum(message = "Load the game")]
+    Load,
 }
 
 pub fn parse(input: &str) -> Option<Command> {
