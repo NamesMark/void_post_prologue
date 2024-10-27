@@ -1,5 +1,7 @@
 use crate::entity::furniture::main_terminal::MainTerminalCommand;
-use crate::GameState;
+
+// FIXME: this should be custom logic in the game, not in the engine
+// FIXME: expell this into the game crate
 
 pub struct ShuttleState {
     main_engine_on: bool,
@@ -191,7 +193,7 @@ This is the end.".to_string())
             );
         }
 
-        if power < 0 || power > 7 {
+        if power > 7 {
             return Err("Invalid power setting for maneuver engines.".to_string());
         }
 

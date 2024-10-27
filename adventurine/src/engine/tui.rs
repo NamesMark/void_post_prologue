@@ -1,6 +1,6 @@
 use crate::engine::state::GameState;
 use crate::entity::EntityId;
-use crate::Command;
+use crate::parser::command::Command;
 use strum::{EnumMessage, IntoEnumIterator};
 
 pub fn inventory(game_state: &GameState) -> String {

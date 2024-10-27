@@ -1,48 +1,70 @@
+pub mod main_terminal;
+pub mod navigation_computer;
+pub mod sink;
+
 use std::any::Any;
+use strum_macros::EnumIter;
 
-use super::Containable;
-use super::Size;
-use super::{Entity, EntityId, Item, ItemId};
-use crate::{impl_entity, impl_entity_containable};
+use super::item::Containable;
+use super::{Entity, EntityId};
+use crate::impl_entity_containable;
 
-impl_entity_containable!(Container);
+#[derive(EnumIter, Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum FurnId {
+    Illuminator,
+    StorageShelf,
+    MessTable,
+    Counter,
+    CoffeeMachine,
+    FoodPrinter,
+    Sink,
+    BosunDesk,
+    BookShelves,
+    CaptainsIlluminator,
+    CaptainsDesk,
 
-pub struct Container {
+    NavigationComputer,
+    MainTerminal,
+
+    MainEngine,
+    FuelTankA,
+    FuelTankB,
+    EmergencyLocker,
+
+    WarningSign,
+    #[default]
+    Dust,
+}
+
+impl_entity_containable!(Furniture);
+
+pub struct Furniture {
     id: EntityId,
     name: String,
     aliases: Vec<String>,
     description: String,
     contains: Vec<EntityId>,
-    size: Size,
 }
 
-impl Container {
+impl Furniture {
     pub fn new(
         id: EntityId,
         name: String,
         aliases: Vec<String>,
         description: String,
         contains: Vec<EntityId>,
-        size: Size,
     ) -> Self {
-        Container {
+        Furniture {
             id,
             name,
             aliases,
             description,
             contains,
-            size,
         }
-    }
-    pub fn as_container(entity: &dyn Entity) -> Option<&Container> {
-        entity.as_any().downcast_ref::<Container>()
-    }
-    fn remove(&mut self, item: ItemId) -> Option<Item> {
-        todo!()
     }
 }
 
-impl Containable for Container {
+impl Containable for Furniture {
     fn can_contain(&self, entity_id: EntityId) -> bool {
         !self.contains.contains(&entity_id)
     }

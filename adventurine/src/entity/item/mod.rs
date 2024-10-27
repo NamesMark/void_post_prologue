@@ -3,7 +3,7 @@ pub mod food;
 pub mod text_item;
 
 use super::{Entity, EntityId};
-use crate::{impl_entity, impl_entity_containable};
+use crate::impl_entity;
 use std::any::Any;
 use strum_macros::{Display, EnumIter};
 

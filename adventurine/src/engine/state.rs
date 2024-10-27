@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use crate::engine::shuttle::ShuttleState;
 use crate::entity::furniture::main_terminal::MainTerminalCommand;
 use crate::entity::item::ItemId;
-use crate::entity::{Entity, EntityId};
+use crate::entity::EntityId;
 use crate::world::data::World;
-use crate::world::room::{Access, Direction, PassageType, RoomIdentifier};
+use crate::world::room::{Direction, PassageType, RoomIdentifier};
 
 use strum::IntoEnumIterator;
 
@@ -34,10 +34,7 @@ impl GameState {
             room_states.insert(room_id, RoomState { is_explored: false });
         }
 
-        let inventory = vec![
-            ItemId::AssistantCard,
-            //ItemId::CaptainCard, // for Debugging
-        ];
+        let inventory = vec![ItemId::AssistantCard];
 
         GameState {
             current_room: starting_room,

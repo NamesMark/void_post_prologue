@@ -1,10 +1,8 @@
 use rand::prelude::SliceRandom;
-use std::cmp::max;
-use std::collections::HashMap;
 
 use crate::engine::state::GameState;
 use crate::entity::item::{Containable, ItemId};
-use crate::entity::{self, Entity, EntityId};
+use crate::entity::{Entity, EntityId};
 use crate::world::room::{Access, Direction, PassageType, RoomIdentifier};
 
 pub fn look(game_state: &GameState) -> String {
@@ -168,11 +166,11 @@ pub fn get_player_access(game_state: &GameState) -> Access {
     return highest_access;
 }
 
-pub fn open(game_state: &GameState, obj: &str) -> String {
+pub fn open(_game_state: &GameState, obj: &str) -> String {
     format!("You try to open the {}.", obj)
 }
 
-pub fn close(game_state: &GameState, obj: &str) -> String {
+pub fn close(_game_state: &GameState, obj: &str) -> String {
     format!("You try to close the {}.", obj)
 }
 
@@ -226,7 +224,7 @@ pub fn drop(game_state: &mut GameState, obj_name: &str) -> String {
                 room.entities.push(entity_id);
             }
 
-            if let Some(entity) = game_state.world.entities.get(&entity_id) {
+            if let Some(_entity) = game_state.world.entities.get(&entity_id) {
                 return format!("You've dropped {}{}.", article, obj_name);
             } else {
                 return "There seems to be a problem dropping the item.".to_string();

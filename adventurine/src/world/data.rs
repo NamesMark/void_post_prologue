@@ -756,9 +756,9 @@ impl World {
         direction: Direction,
     ) -> Option<(RoomIdentifier, &PassageType)> {
         if let Some(room_attributes) = self.rooms.get(&room_id) {
-            for (dir, passageType, adjacent_room_id) in &room_attributes.connected_rooms {
+            for (dir, passage_type, adjacent_room_id) in &room_attributes.connected_rooms {
                 if *dir == direction {
-                    return Some((*adjacent_room_id, passageType));
+                    return Some((*adjacent_room_id, passage_type));
                 }
             }
         }

@@ -1,4 +1,4 @@
-use crate::entity::{furniture::Furniture, EntityId};
+use crate::entity::EntityId;
 use std::cmp::Ordering;
 use strum_macros::{Display, EnumIter};
 

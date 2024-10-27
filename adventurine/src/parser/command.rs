@@ -1,6 +1,3 @@
-use std::borrow::Cow;
-
-use strum::IntoEnumIterator;
 use strum_macros::{EnumIter, EnumMessage};
 
 use crate::world::room::Direction;
@@ -144,13 +141,4 @@ const ARTICLES: [&str; 3] = ["the", "a", "an"];
 
 fn is_article(word: &str) -> bool {
     ARTICLES.iter().any(|&a| a == word)
-}
-
-fn strip_articles_and_join(words: &[&str]) -> String {
-    words
-        .iter()
-        .filter(|&word| is_article(word))
-        .cloned()
-        .collect::<Vec<&str>>()
-        .join(" ")
 }

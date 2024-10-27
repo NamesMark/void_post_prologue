@@ -1,9 +1,7 @@
 use std::any::Any;
 
 use super::Edible;
-use super::Size;
-use super::{Entity, EntityId, Item, ItemId};
-use crate::impl_entity;
+use super::{Entity, EntityId};
 
 pub struct Food {
     id: EntityId,

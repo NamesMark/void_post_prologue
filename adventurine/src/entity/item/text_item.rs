@@ -1,9 +1,7 @@
 use std::any::Any;
 
 use super::Readable;
-use super::Size;
-use super::{Entity, EntityId, Item, ItemId};
-use crate::impl_entity;
+use super::{Entity, EntityId};
 
 pub struct TextItem {
     id: EntityId,
@@ -33,9 +31,7 @@ impl TextItem {
 
 impl Readable for TextItem {
     fn read(&mut self) -> Result<&String, &'static str> {
-        // println!("You read the {}:", self.name);
-        // println!("{}", self.contents);
-        Ok((&self.contents))
+        Ok(&self.contents)
     }
 }
 

@@ -1,8 +1,7 @@
 use std::any::Any;
 
-use super::{Entity, EntityId};
-use crate::entity::item::{Containable, ItemId, Usable};
-use crate::{impl_entity, impl_entity_containable};
+use super::EntityId;
+use crate::impl_entity;
 
 impl_entity!(MainTerminal);
 
