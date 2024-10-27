@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::world::room::Direction;
 
 pub enum Command {
@@ -41,13 +43,10 @@ pub enum Command {
 }
 
 pub fn parse(input: &str) -> Option<Command> {
-    let input_lowercase = input.trim().to_lowercase();
-    let parts: Vec<&str> = input_lowercase
-        .split_whitespace()
-        .filter(|word| !is_article(word))
-        .collect();
+    let sanitized_words = sanitize_and_split(input);
+    let words: Vec<&str> = sanitized_words.iter().map(|s| s.as_str()).collect();
 
-    match parts.as_slice() {
+    match words.iter().as_slice() {
         ["x", "room"] => Some(Command::Look(None)),
         ["look", obj] | ["examine", obj] | ["x", obj] => Some(Command::Look(Some(obj.to_string()))),
         ["look"] | ["examine"] | ["x"] => Some(Command::Look(None)),
@@ -94,6 +93,17 @@ pub fn parse(input: &str) -> Option<Command> {
         ["down"] | ["d"] | ["go", "down"] | ["go", "d"] => Some(Command::Go(Direction::Down)),
         _ => None,
     }
+}
+
+fn sanitize_and_split(input: &str) -> Vec<String> {
+    let input_lowercase = input.trim().to_lowercase();
+    // TODO: should be possible to optimize
+    let parts = input_lowercase
+        .split_whitespace()
+        .filter(|word| !is_article(word))
+        .map(|w| w.to_string())
+        .collect();
+    parts
 }
 
 const ARTICLES: [&str; 3] = ["the", "a", "an"];
