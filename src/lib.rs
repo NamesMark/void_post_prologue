@@ -55,6 +55,7 @@ pub fn process_input(game_state: &mut GameState, command: Option<Command>) -> St
         // // Misc
         // Save,                 // Save the game
         // Load,                 // Load the game
+        Some(Command::DebugListAllCommands) => tui::list_all_commands(),
         _ => unknown_command_reaction(),
     }
 }

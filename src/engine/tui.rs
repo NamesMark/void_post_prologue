@@ -25,7 +25,13 @@ pub fn inventory(game_state: &GameState) -> String {
 
 pub fn help() -> String {
     let mut help_message = String::new();
-    help_message.push_str("Enter one of the following commands:");
+    help_message.push_str("Try looking around, searching for items that might help you, taking a closer look at your surroundings. You'll get it!");
+    help_message
+}
+
+pub fn list_all_commands() -> String {
+    let mut help_message = String::new();
+    help_message.push_str("The available commands are:");
     for command in Command::iter() {
         let message = command.get_message().unwrap_or("No description available");
         help_message.push_str(&format!("{}: {}\n", command, message));

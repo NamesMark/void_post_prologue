@@ -72,6 +72,9 @@ pub enum Command {
 
     #[strum(message = "Load the game")]
     Load,
+
+    #[strum(message = "List every command")]
+    DebugListAllCommands,
 }
 
 pub fn parse(input: &str) -> Option<Command> {
@@ -114,6 +117,7 @@ pub fn parse(input: &str) -> Option<Command> {
         ["status"] => Some(Command::Status),
 
         ["help"] | ["h"] => Some(Command::Help),
+
         ["save"] => Some(Command::Save),
         ["load"] => Some(Command::Load),
 
@@ -123,6 +127,8 @@ pub fn parse(input: &str) -> Option<Command> {
         ["west"] | ["w"] | ["go", "west"] | ["go", "w"] => Some(Command::Go(Direction::West)),
         ["up"] | ["u"] | ["go", "up"] | ["go", "u"] => Some(Command::Go(Direction::Up)),
         ["down"] | ["d"] | ["go", "down"] | ["go", "d"] => Some(Command::Go(Direction::Down)),
+
+        ["list_all_commands"] => Some(Command::DebugListAllCommands),
         _ => None,
     }
 }
