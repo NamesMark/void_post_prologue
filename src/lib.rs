@@ -1,10 +1,10 @@
 #[macro_use]
 mod utils;
 
-mod engine;
-mod entity;
-mod parser;
-mod world;
+pub mod engine;
+pub mod entity;
+pub mod parser;
+pub mod world;
 
 //use world::World;
 use world::room::Direction;
